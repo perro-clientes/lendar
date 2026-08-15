@@ -15,6 +15,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Lendar",
   description: "Simulador de préstamos e inversiones hipotecarias P2P",
+  icons: {
+    icon: "/brand/lendar-favicon.svg",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
