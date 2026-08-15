@@ -18,7 +18,12 @@ function assertEnv<T extends Record<string, string | undefined>>(
   return env as { [K in keyof T]: string };
 }
 
-const publicEnv = assertEnv(publicEnvRaw, ["supabaseUrl", "supabaseAnonKey"]);
-const serverEnv = assertEnv(serverEnvRaw, ["supabaseServiceRoleKey"]);
+function getPublicEnv() {
+  return assertEnv(publicEnvRaw, ["supabaseUrl", "supabaseAnonKey"]);
+}
 
-export { publicEnv, serverEnv };
+function getServerEnv() {
+  return assertEnv(serverEnvRaw, ["supabaseServiceRoleKey"]);
+}
+
+export { getPublicEnv, getServerEnv };
