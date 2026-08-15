@@ -38,6 +38,7 @@ Usuarios:
 | Tailwind CSS | v4 | Utilities; theme vía `@theme` en `globals.css` (sin `tailwind.config.ts`) |
 | Zod | latest | Validación de payloads en `lib/validations/leads.ts` |
 | @supabase/supabase-js | latest | Cliente server (service role) para el endpoint |
+| @next/third-parties | latest | GoogleAnalytics (GA4) |
 | Supabase | latest | Solo Postgres (tabla `leads`); sin Auth en esta etapa |
 | Vercel | — | Deploy; preview por PR |
 | GitHub | — | Versionado, flujo por PR |
@@ -70,7 +71,9 @@ src/
 │   ├── page.tsx                    → Landing con ambos simuladores
 │   ├── simular-prestamo/page.tsx   → Ruta dedicada (destino de QR), lee searchParams
 │   ├── simular-inversion/page.tsx  → Ruta dedicada (destino de QR), lee searchParams
-│   └── api/leads/route.ts          → POST para guardar leads
+│   ├── api/leads/route.ts          → POST para guardar leads
+│   ├── robots.ts                   → robots.txt (indexación)
+│   └── sitemap.ts                  → sitemap.xml (indexación)
 ├── components/
 │   ├── simuladores/                → SimuladorPrestamo.tsx, SimuladorInversion.tsx (reutilizables)
 │   └── ui/                         → Slider.tsx, Button.tsx, Card.tsx, Input.tsx, Field.tsx
@@ -78,6 +81,7 @@ src/
 │   ├── calculos.ts                 → Funciones puras (amortización francesa, IVA, valor futuro, formato)
 │   ├── validations/leads.ts        → Schemas Zod (leadSchema y subtipos)
 │   ├── supabase.ts                 → crearClienteSupabaseServer() (service role)
+│   ├── site.ts                     → siteUrl con fallback (SEO)
 │   └── env.ts                      → Validación de publicEnv y serverEnv al inicio
 └── types/
     └── simulador.ts                → Tipos compartidos (inputs/outputs/tracking/lead)
@@ -112,6 +116,8 @@ docs/                               → PRD.md y CONTEXT.md
 ## 8. VARIABLES DE ENTORNO
 
 ```
+NEXT_PUBLIC_SITE_URL              → público (dominio canónico; fallback a VERCEL_PROJECT_PRODUCTION_URL)
+NEXT_PUBLIC_GA_ID                 → público (Measurement ID GA4, opcional; sin él no se carga GA)
 NEXT_PUBLIC_SUPABASE_URL          → público
 NEXT_PUBLIC_SUPABASE_ANON_KEY     → público (reservado para uso futuro en cliente)
 SUPABASE_SERVICE_ROLE_KEY         → server-only ⚠️
@@ -140,6 +146,12 @@ SUPABASE_SERVICE_ROLE_KEY         → server-only ⚠️
 
 [2026-08] DECISIÓN: pnpm como package manager
           RAZÓN: Velocidad de instalación, lockfile determinístico; reemplaza al npm inicial del scaffold
+
+[2026-08] DECISIÓN: SEO por página con Metadata API (title 50-60, description 135-160, canonical sin query params)
+          RAZÓN: Evita contenido duplicado por los query params de tracking y mejora el CTR en Google
+
+[2026-08] DECISIÓN: Google Analytics 4 vía @next/third-parties (gtag.js), activo solo si NEXT_PUBLIC_GA_ID está seteada
+          RAZÓN: Carga post-hydration (no bloquea el render); se puede habilitar/deshabilitar por entorno
 
 [2026-08] DECISIÓN: Todos los agentes tienen solo permiso de lectura
           RAZÓN: Las modificaciones las aprueba y ejecuta el humano

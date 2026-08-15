@@ -1,5 +1,12 @@
+import type { Metadata } from "next";
 import { SimuladorPrestamo } from "@/components/simuladores/SimuladorPrestamo";
 import { SimuladorInversion } from "@/components/simuladores/SimuladorInversion";
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "/",
+  },
+};
 
 export default function Home() {
   return (
