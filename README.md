@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Lendar
 
-## Getting Started
+Plataforma argentina de préstamos hipotecarios P2P para clientes de la red RE/MAX Argentina. En esta etapa: landing pages con simuladores de préstamo e inversión para eventos presenciales, con registro de leads en Supabase.
 
-First, run the development server:
+## Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Next.js 16 (App Router) + TypeScript strict — deploy en Vercel
+- Tailwind CSS v4 (theme vía `@theme` en CSS)
+- Supabase (Postgres, tabla `leads`; sin Auth por ahora)
+- Zod (validación de payloads)
+
+## Estructura
+
+```
+src/
+├── app/                  → Páginas (/, /simular-prestamo, /simular-inversion) y /api/leads
+├── components/
+│   ├── simuladores/      → SimuladorPrestamo, SimuladorInversion (reutilizables)
+│   └── ui/               → Slider, Button, Card, Input, Field
+├── lib/                  → calculos.ts (funciones puras), validations/, supabase.ts, env.ts
+└── types/                → Tipos compartidos de los simuladores
+supabase/migrations/      → SQL de la tabla leads
+agents/                   → Subagentes del proyecto
+docs/                     → PRD.md y CONTEXT.md
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Setup
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. `pnpm install`
+2. Configurar las variables de entorno (ver `.env.example`):
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY` (server-only)
+3. Aplicar la migración de `supabase/migrations/` en el proyecto de Supabase (SQL editor o `supabase db push`)
+4. `pnpm dev`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Rutas de QR
 
-## Learn More
+Los simuladores aceptan tracking por query params:
 
-To learn more about Next.js, take a look at the following resources:
+```
+/simular-prestamo?evento=expo-remax-2026&vendedor=juan-perez
+/simular-inversion?evento=expo-remax-2026&vendedor=juan-perez
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Los valores se guardan junto con el lead.
