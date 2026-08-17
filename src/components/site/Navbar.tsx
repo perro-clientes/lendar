@@ -21,7 +21,9 @@ export function Navbar() {
           <ul className="hidden items-center gap-6 text-sm font-medium text-text-secondary md:flex">
             {/* Links de secciones — agregar cuando existan */}
           </ul>
-          <CTAButton>Contacto</CTAButton>
+          <Link href="/contacto">
+            <CTAButton>Contacto</CTAButton>
+          </Link>
         </div>
       </nav>
     </header>

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { FaFacebookF, FaLinkedinIn, FaInstagram, FaYoutube } from "react-icons/fa";
+import { FaLinkedinIn, FaInstagram } from "react-icons/fa";
 
 const socialLinks = [
   { icon: FaLinkedinIn, href: "https://www.linkedin.com/company/lendar", label: "LinkedIn" },
