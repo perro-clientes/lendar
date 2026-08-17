@@ -2,6 +2,7 @@
 
 @theme {
   --font-sans: var(--font-plus-jakarta-sans), system-ui, sans-serif;
+  --font-serif: var(--font-roboto-serif), Georgia, serif;
 
   /* Base de marca */
   --color-teal: #55c3c4;

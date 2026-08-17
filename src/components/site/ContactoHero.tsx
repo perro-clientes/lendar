@@ -1,11 +1,8 @@
-import { FiMessageSquare } from "react-icons/fi";
-
 export function ContactoHero() {
   return (
-    <div className="relative flex-1 bg-violet-dark text-white p-8 md:p-12 flex flex-col gap-8">
-      <FiMessageSquare className="text-5xl" />
+    <div className="relative text-white p-8 md:p-12 flex flex-col items-start gap-8">
 
-      <h1 className="text-5xl font-bold uppercase tracking-wide">
+      <h1 className="text-5xl md:text-7xl font-serif font-semibold tracking-wide">
         Contactate
       </h1>
 
@@ -25,7 +22,7 @@ export function ContactoHero() {
 
       <a
         href="#lugares-de-firma"
-        className="text-sm font-medium underline hover:text-teal-light transition-colors mt-auto"
+        className="text-md font-medium underline hover:text-teal-dark transition-colors"
       >
         Ver lugares de firma Litoral
       </a>

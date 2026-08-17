@@ -1,9 +1,20 @@
 import { type ButtonHTMLAttributes } from "react";
 
-export function CTAButton(props: ButtonHTMLAttributes<HTMLButtonElement>) {
+interface CTAButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: "solid" | "outline";
+}
+
+export function CTAButton({ variant = "solid", className, ...props }: CTAButtonProps) {
+  const base = "hover:cursor-pointer rounded-full px-8 h-11 text-sm font-semibold transition-colors";
+
+  const variants = {
+    solid: "bg-teal text-white hover:bg-teal-dark",
+    outline: "border-2 border-violet-dark text-violet-dark hover:bg-violet-dark hover:text-white",
+  };
+
   return (
     <button
-      className="hover:cursor-pointer rounded-full bg-teal px-8 h-11 text-sm font-semibold text-white hover:bg-teal-dark transition-colors"
+      className={`${base} ${variants[variant]} ${className ?? ""}`}
       {...props}
     />
   );

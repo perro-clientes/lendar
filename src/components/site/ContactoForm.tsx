@@ -22,8 +22,8 @@ export function ContactoForm() {
   }
 
   return (
-    <div className="flex-1 bg-surface p-8 md:p-12 flex items-center">
-      <form onSubmit={handleSubmit} className="w-full max-w-md mx-auto flex flex-col gap-6">
+    <div className="flex-1 flex p-8 items-center">
+      <form onSubmit={handleSubmit} className="bg-white p-8 py-12 rounded-3xl w-full max-w-xl mx-auto flex flex-col gap-6">
         <div className="flex gap-4">
           <div className="flex-1 flex flex-col gap-1">
             <label htmlFor="nombre" className="text-sm font-medium text-text-secondary">
@@ -34,7 +34,7 @@ export function ContactoForm() {
               id="nombre"
               name="nombre"
               required
-              className="border-b border-border py-2 text-text focus:border-violet-dark outline-none transition-colors"
+              className="p-2 rounded-xl border border-border py-2 text-text focus:border-violet-dark outline-none transition-colors"
             />
           </div>
           <div className="flex-1 flex flex-col gap-1">
@@ -46,7 +46,7 @@ export function ContactoForm() {
               id="apellido"
               name="apellido"
               required
-              className="border-b border-border py-2 text-text focus:border-violet-dark outline-none transition-colors"
+              className="p-2 rounded-xl border border-border py-2 text-text focus:border-violet-dark outline-none transition-colors"
             />
           </div>
         </div>
@@ -60,7 +60,7 @@ export function ContactoForm() {
             id="email"
             name="email"
             required
-            className="border-b border-border py-2 text-text focus:border-violet-dark outline-none transition-colors"
+            className="p-2 rounded-xl border border-border py-2 text-text focus:border-violet-dark outline-none transition-colors"
           />
         </div>
 
@@ -72,7 +72,7 @@ export function ContactoForm() {
             id="mensaje"
             name="mensaje"
             rows={4}
-            className="border-b border-border py-2 text-text focus:border-violet-dark outline-none transition-colors resize-none"
+            className="p-2 rounded-xl border border-border py-2 text-text focus:border-violet-dark outline-none transition-colors resize-none"
           />
         </div>
 
@@ -84,7 +84,7 @@ export function ContactoForm() {
             id="motivo"
             name="motivo"
             required
-            className="border-b border-border py-2 text-text focus:border-violet-dark outline-none transition-colors bg-transparent"
+            className="p-2 rounded-xl border border-border py-2 text-text focus:border-violet-dark outline-none transition-colors bg-transparent"
             defaultValue=""
           >
             <option value="" disabled>

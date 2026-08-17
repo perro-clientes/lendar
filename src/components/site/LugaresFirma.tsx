@@ -1,3 +1,5 @@
+import { CTAButton } from "./CTAButton";
+
 const lugares = [
   {
     zona: "Santa Fe",
@@ -33,31 +35,34 @@ const lugares = [
 
 export function LugaresFirma() {
   return (
-    <section id="lugares-de-firma" className="bg-background py-12 px-4">
-      <div className="mx-auto max-w-5xl">
-        <h2 className="text-2xl font-bold text-text mb-8">Lugares de firma Litoral</h2>
+    <section id="lugares-de-firma" className="bg-background py-24 px-4">
+      <div className="mx-auto max-w-6xl">
+        <div className="text-center mb-12 max-w-xl mx-auto">
+          <h2 className="text-4xl md:text-5xl font-serif font-semibold text-center mb-4">
+            Lugares de firma
+          </h2>
+          <p className="text-lg text-text-muted">Contamos con escribanías de primer nivel en Santa Fe, Rosario y Paraná para realizar tus firmas.</p>
+        </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead>
-              <tr className="border-b border-border text-text-secondary">
-                <th className="py-3 pr-4 font-semibold">Zona</th>
-                <th className="py-3 pr-4 font-semibold">Escribanía</th>
-                <th className="py-3 pr-4 font-semibold">Dirección</th>
-                <th className="py-3 font-semibold">Oficinas RE/MAX</th>
-              </tr>
-            </thead>
-            <tbody>
-              {lugares.map((lugar, i) => (
-                <tr key={i} className="border-b border-border last:border-b-0">
-                  <td className="py-3 pr-4 text-text">{lugar.zona}</td>
-                  <td className="py-3 pr-4 text-text font-medium">{lugar.escribania}</td>
-                  <td className="py-3 pr-4 text-text-muted">{lugar.direccion}</td>
-                  <td className="py-3 text-text-muted">{lugar.oficinas}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {lugares.map((lugar, i) => (
+            <div
+              key={i}
+              className="bg-surface border border-border rounded-2xl p-6 flex flex-col gap-3"
+            >
+              <span className="text-xs font-semibold uppercase tracking-wider text-text-muted">
+                {lugar.zona}
+              </span>
+              <h3 className="font-serif font-semibold text-2xl text-text">
+                {lugar.escribania}
+              </h3>
+              <p className="text-sm text-text-muted">{lugar.direccion}</p>
+              <p className="text-sm text-text-secondary">{lugar.oficinas}</p>
+              <div className="mt-auto pt-4">
+                <CTAButton variant="outline">Contactar</CTAButton>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
