@@ -11,9 +11,12 @@ export const metadata: Metadata = {
 export default function ContactoPage() {
   return (
     <>
-      <section className="flex flex-col md:flex-row min-h-[80vh]">
-        <ContactoHero />
-        <ContactoForm />
+      <section className="bg-violet bg-auto bg-center"
+        style={{ backgroundImage: "url('/miscelaneous/bg-shape-v29.png')" }}>
+        <div className="flex flex-col md:flex-row md:items-center min-h-[80vh] max-w-7xl mx-auto">
+          <ContactoHero />
+          <ContactoForm />
+        </div>
       </section>
       <LugaresFirma />
     </>
