@@ -1,27 +1,22 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import { GoogleAnalytics } from "@next/third-parties/google";
-import { siteUrl } from "@/lib/site";
+import { Plus_Jakarta_Sans } from "next/font/google";
+import { Navbar } from "@/components/site/Navbar";
+import { Footer } from "@/components/site/Footer";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: ["200", "300", "400", "500", "600", "700", "800"],
+  variable: "--font-plus-jakarta-sans",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
   title: {
-    default: "Préstamos hipotecarios P2P sin banco en Argentina - Lendar",
+    default: "Lendar",
     template: "%s - Lendar",
   },
-  description:
-    "Simulá tu préstamo hipotecario o tu inversión P2P sin bancos, con financiación colaborativa para clientes RE/MAX. Dejá tus datos y un asesor te contacta.",
+  description: "Préstamos hipotecarios P2P sin banco en Argentina",
   icons: {
     icon: "/brand/lendar-favicon.svg",
   },
@@ -32,16 +27,14 @@ export const metadata: Metadata = {
   },
 };
 
-const gaId = process.env.NEXT_PUBLIC_GA_ID;
-
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="es"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
-      {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
+    <html lang="es" className={`${plusJakartaSans.variable} h-full antialiased`}>
+      <body className="min-h-full flex flex-col">
+        <Navbar />
+        <main className="flex-1">{children}</main>
+        <Footer />
+      </body>
     </html>
   );
 }

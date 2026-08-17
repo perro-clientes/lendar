@@ -1,19 +1,34 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  --font-sans: var(--font-plus-jakarta-sans), system-ui, sans-serif;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  /* Base de marca */
+  --color-teal: #55c3c4;
+  --color-teal-light: #e8f8f8;
+  --color-teal-lighter: #c8eeee;
+  --color-teal-dark: #3eaaab;
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  --color-violet: #6f659d;
+  --color-violet-light: #f0eef8;
+  --color-violet-lighter: #d8d5f0;
+  --color-violet-dark: #5a5280;
+
+  /* Semántico por audiencia */
+  --color-solicitante: var(--color-teal);
+  --color-solicitante-light: var(--color-teal-light);
+  --color-solicitante-dark: var(--color-teal-dark);
+
+  --color-inversor: var(--color-violet);
+  --color-inversor-light: var(--color-violet-light);
+  --color-inversor-dark: var(--color-violet-dark);
+
+  /* Neutros */
+  --color-background: #f4f5f7;
+  --color-surface: #ffffff;
+  --color-border: #e4e6ea;
+  --color-text: #1a1d23;
+  --color-text-secondary: #374151;
+  --color-text-muted: #6b7280;
+  --color-text-light: #9ca3af;
 }

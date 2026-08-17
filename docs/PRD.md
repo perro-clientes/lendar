@@ -1,9 +1,13 @@
 # Lendar — Product Requirements Document
 
+> ⚠️ **DOCUMENTO DESACTUALIZADO — 2026-08-17**
+> Este PRD refleja la etapa de MVP que fue reseteada. El proyecto fue reseteado a su base mínima.
+> Se reescribirá cuando se defina la etapa 1. Ver `docs/CONTEXT.md` para el estado actual.
+
 Cliente: Lendar (red RE/MAX Argentina)
 Proyecto: Plataforma de préstamos hipotecarios P2P — etapa de simulación y captura de leads
 Versión: 0.1 — 2026-08-14
-Estado: MVP de simulación en desarrollo (scaffold)
+Estado: **DESESTIMADO** — Reset a base mínima (2026-08-17)
 
 ---
 
