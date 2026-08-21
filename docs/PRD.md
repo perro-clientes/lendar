@@ -1,7 +1,7 @@
 # Lendar — Product Requirements Document
 
-> **Versión: 0.2 — 2026-08-17**
-> Estado: Etapa de sitio en progreso — design system y página de contacto implementados.
+> **Versión: 0.3 — 2026-08-21**
+> Estado: Etapa de simuladores en progreso — design system, página de contacto y simulador de préstamo implementados.
 
 Cliente: Lendar (red RE/MAX Argentina)
 Proyecto: Plataforma de préstamos hipotecarios P2P
@@ -50,13 +50,17 @@ Proyecto: Plataforma de préstamos hipotecarios P2P
 | ContactoForm con validación cliente | [x] Implementado |
 | Lugares de firma (cards responsive) | [x] Implementado |
 | Supabase configurado (sin uso) | [x] Listo |
+| Simulador de préstamo (`SimuladorPrestamo` + subcomponentes) | [x] Implementado |
+| Cálculo puro + constantes de negocio (`lib/calculos.ts`) | [x] Implementado |
+| Ruta `/simulador-prestamos` | [x] Implementada |
+| Contacto post-simulador (formulario, UI-only) | [x] Implementado |
+| Primitivos ui/ normalizados a tokens neutros | [x] Implementado |
 
 ### 3.2 Pendiente
 
 | Feature | Estado |
 |---|---|
 | Landing principal (`/`) | [ ] Pendiente |
-| Simulador de préstamo | [ ] Pendiente |
 | Simulador de inversión | [ ] Pendiente |
 | Tracking por query params | [ ] Pendiente |
 | Endpoint de leads (`/api/leads`) | [ ] Pendiente |
@@ -131,6 +135,24 @@ Lead con tipo, inputs, resultado, contacto y origen
 - Grid responsive: 1 col → 2 md → 3 lg
 - Cada card: zona, escribanía, dirección, oficinas RE/MAX, CTA outline
 
+### 6.4 Simulador de préstamo (`/simulador-prestamos`)
+
+**Inputs:**
+- Valor real de propiedad a hipotecar: slider USD 30.000–500.000, step 5.000
+- Monto solicitado: slider min USD 10.000, max dinámico = 35% del valor de la propiedad, step 1.000 (se clampea si baja la propiedad)
+- Plazo de devolución: 5 botones con TNA visible — 1 año (9,5%) · 2 años (10,5%) · 3 años (11,5%) · 4 años (12,5%) · 5 años (13,5%)
+- Checkbox "Vivienda única y permanente": sin efecto en el cálculo (pendiente Lendar)
+
+**Resultado:**
+- Amortización francesa: cuota fija mensual (capital + interés) destacada en card
+- Comisión inicial (5%) mostrada como línea informativa; IVA (21% sobre interés) detallado en la tabla
+- Tabla mes a mes expandible: N° cuota, amortización, interés, IVA, cuota total, saldo post-cuota
+
+**Contacto post-simulador (UI-only):**
+- Formulario Nombre / Email / Teléfono debajo de la cuota, antes de la tabla
+- Validación cliente: nombre requerido; email o teléfono al menos uno, formato validado
+- Confirmación sin backend: "¡Listo! Un asesor te va a contactar a la brevedad."
+
 ## 7. ARQUITECTURA DEL SISTEMA
 
 ### 7.1 Stack tecnológico
@@ -163,6 +185,7 @@ Lead con tipo, inputs, resultado, contacto y origen
 |---|---|
 | `/` | Landing principal (placeholder) |
 | `/contacto` | Página de contacto |
+| `/simulador-prestamos` | Simulador de préstamo |
 
 ### 7.4 Seguridad y acceso
 
@@ -193,6 +216,18 @@ Lead con tipo, inputs, resultado, contacto y origen
 4. Puede ver dirección y oficinas asociadas
 ```
 
+### Flujo C: Prospecto simula un préstamo
+
+```
+1. Entra a /simulador-prestamos desde link/QR (origen evento/vendedor: futuro)
+2. Ajusta valor de propiedad, monto solicitado y plazo
+3. Ve su cuota mensual estimada al instante
+4. Deja sus datos (nombre + email/teléfono) y/o expande la tabla de cuotas
+5. Ve confirmación de contacto (UI-only)
+```
+
+**Servicios consumidos:** Ninguno aún (futuro: POST /api/leads con origen evento/vendedor)
+
 ## 9. REGLAS DE NEGOCIO
 
 1. Los colores de marca se usan vía tokens de Tailwind (nunca hex hardcodeado)
@@ -200,6 +235,8 @@ Lead con tipo, inputs, resultado, contacto y origen
 3. El formulario es Client Component por manejo de estado
 4. La data de lugares de firma está hardcodeada (pendiente de confirmar con cliente)
 5. Mobile-first: un layout responsive que se adapta a cada dispositivo
+6. La lógica financiera vive en funciones puras con constantes exportadas (única fuente de verdad); sin números sueltos en la UI
+7. Las reglas pendientes de confirmación ("vivienda única y permanente", concepto gravado por el IVA, comisión inicial) van como TODO en código — nunca se inventan
 
 ## 10. SUPUESTOS Y RESTRICCIONES
 
@@ -217,7 +254,7 @@ Lead con tipo, inputs, resultado, contacto y origen
 ## 11. ROADMAP EVOLUTIVO
 
 - **Corto plazo:** Landing principal con contenido
-- **Corto plazo:** Simulador de préstamo
+- **Hecho:** Simulador de préstamo (`/simulador-prestamos`)
 - **Corto plazo:** Simulador de inversión
 - **Corto plazo:** Tracking por query params (evento/vendedor)
 - **Corto plazo:** Endpoint de leads y migración SQL
@@ -238,3 +275,5 @@ Lead con tipo, inputs, resultado, contacto y origen
 | Valor futuro | Monto final de una inversión con interés compuesto mensual |
 | Tracking | Conjunto `evento`/`vendedor` que identifica el origen del lead |
 | CTA | Call to Action — botón o enlace que invita a una acción |
+| TNA | Tasa Nominal Anual — se divide por 12 para obtener la tasa mensual |
+| Comisión inicial | Cargo único del 5% del monto solicitado (hoy solo informativa) |
