@@ -11,5 +11,3 @@ export interface FilaAmortizacion {
   cuotaTotal: number;
   saldoDeudor: number;
 }
-
-export type MedioContacto = "email" | "telefono";

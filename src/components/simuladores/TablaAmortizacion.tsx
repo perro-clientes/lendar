@@ -14,7 +14,7 @@ export function TablaAmortizacion({ filas }: TablaAmortizacionProps) {
           ▾
         </span>
       </summary>
-      <div className="max-h-55 overflow-y-auto px-3 pb-4">
+      <div className="max-h-80 md:max-h-55 overflow-y-auto px-3">
         <table className="max-h-50 w-full min-w-[480px] border-collapse text-sm tabular-nums">
           <thead>
             <tr className="text-xs uppercase tracking-wide text-text-muted">

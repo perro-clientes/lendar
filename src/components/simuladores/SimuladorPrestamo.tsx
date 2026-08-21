@@ -51,7 +51,7 @@ export function SimuladorPrestamo() {
   return (
     <section aria-label="Simulador de préstamo" className="flex flex-col gap-4">
       <div className="flex flex-col gap-4 md:flex-row items-start md:max-h-[500px] overflow-y-hidden">
-        <Card className="w-full gap-5 p-6">
+        <Card className="w-full basis-[40%] gap-5 p-6">
           <Slider
             label="Valor real de propiedad a hipotecar"
             value={valorPropiedad}
@@ -116,7 +116,7 @@ export function SimuladorPrestamo() {
           </label>
         </Card>
 
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 md:basis-[60%]">
           <div className="rounded-2xl border border-solicitante/40 bg-solicitante-light p-6">
             <p className="text-sm font-medium text-text-secondary">Cuota mensual estimada</p>
             <p className="mt-1 flex flex-wrap items-baseline gap-x-2">
@@ -125,7 +125,7 @@ export function SimuladorPrestamo() {
               </span>
               <span className="text-base text-text-muted">USD/mes</span>
             </p>
-            <p className="mt-2 text-xs leading-relaxed text-text-muted">
+            <p className="mt-2 text-xs leading-relaxed text-text-muted max-w-md">
               Capital e interés · Comisión inicial: {formatUSD(comisionInicial)} ({COMISION_INICIAL_PCT * 100}%) · El IVA
               sobre intereses se detalla en la tabla.
             </p>
