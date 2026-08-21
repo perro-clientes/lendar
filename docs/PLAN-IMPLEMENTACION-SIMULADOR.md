@@ -1,5 +1,12 @@
 # Plan de implementación — Simulador de préstamo
 
+> **Estado: IMPLEMENTADO (2026-08-21)**
+> Este documento se conserva como registro del diseño original. Desvíos de la implementación final:
+> - El contacto post-simulador es un formulario Nombre/Email/Teléfono (no el switcher Email/Teléfono de §5.5).
+> - El montaje no fue temporal en `page.tsx`: vive en la ruta `/simulador-prestamos` (§5.7).
+> - `MedioContacto` se eliminó de `types/simulador.ts` al quedar sin uso.
+> Estado consolidado ver `docs/CONTEXT.md` y `docs/PRD.md`.
+
 > **Estado: diseñado, pendiente de ejecución (2026-08-21)**
 > Componente aislado, sin páginas nuevas ni backend. Documento operativo: contiene decisiones aprobadas y el código completo listo para aplicar.
 

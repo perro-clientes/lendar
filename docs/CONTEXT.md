@@ -1,7 +1,7 @@
 # CONTEXT — Lendar
 
-> **Estado: Etapa de sitio en progreso (2026-08-17)**
-> Design system definido, sitio con Navbar, Footer y página de contacto implementada.
+> **Estado: Etapa de simuladores en progreso (2026-08-21)**
+> Design system, sitio (Navbar/Footer/contacto) y simulador de préstamo implementados.
 
 ## 1. DESCRIPCIÓN DEL PRODUCTO
 
@@ -21,8 +21,9 @@ Lendar es una plataforma argentina de préstamos hipotecarios P2P, exclusiva par
 [x] Design system: paleta de colores (teal/violet) y tipografía (Plus Jakarta Sans + Roboto Serif)
 [x] Componentes base: Navbar, Footer, CTAButton (con variante solid/outline)
 [x] Página de contacto (/contacto) con formulario y sección "Lugares de firma"
+[x] Simulador de préstamo (/simulador-prestamos): UI, cálculo puro y contacto post-simulador
 [ ] Landing principal (pendiente)
-[ ] Simuladores
+[ ] Simulador de inversión
 [ ] Endpoint de leads
 [ ] Migración SQL
 [ ] Google Analytics
@@ -106,6 +107,8 @@ src/
 │   ├── page.tsx                  → Landing principal (placeholder)
 │   ├── contacto/
 │   │   └── page.tsx              → Página de contacto
+│   ├── simulador-prestamos/
+│   │   └── page.tsx              → Página del simulador de préstamo
 │   └── api/                      → (vacío, listo para endpoints)
 ├── components/
 │   ├── site/                     → Componentes del sitio
@@ -115,15 +118,21 @@ src/
 │   │   ├── ContactoHero.tsx      → Columna izquierda de contacto
 │   │   ├── ContactoForm.tsx      → Formulario de contacto
 │   │   └── LugaresFirma.tsx      → Grid de cards de escribanías
-│   └── ui/                       → Componentes genéricos (primitivos)
+│   ├── simuladores/              → Componentes del simulador de préstamo
+│   │   ├── SimuladorPrestamo.tsx → UI principal (Client Component)
+│   │   ├── TablaAmortizacion.tsx → Tabla mes a mes expandible (<details>)
+│   │   └── ContactoPostSimulador.tsx → Formulario de contacto post-cuota (UI-only)
+│   └── ui/                       → Primitivos genéricos (tokens neutros)
 │       ├── Button.tsx
 │       ├── Card.tsx
 │       ├── Field.tsx
 │       ├── Input.tsx
-│       └── Slider.tsx
+│       └── Slider.tsx            → Extensible vía props accent/className
 ├── lib/
-│   └── supabase.ts               → Cliente server (service role)
-├── types/                        → (vacío)
+│   ├── supabase.ts               → Cliente server (service role)
+│   └── calculos.ts               → Funciones financieras puras + constantes de negocio
+├── types/
+│   └── simulador.ts              → Tipos compartidos del simulador
 └── public/
     ├── brand/                    → Logos y favicon
     │   ├── isologo-lendar.svg
@@ -135,7 +144,7 @@ src/
 supabase/
 │   └── migrations/               → (vacío)
 agents/                           → Subagentes del proyecto
-docs/                             → PRD.md y CONTEXT.md
+docs/                             → PRD.md, CONTEXT.md y plan del simulador
 ```
 
 ## 7. COMPONENTES DEL SITIO
@@ -187,12 +196,51 @@ Uso: `<CTAButton>Contacto</CTAButton>` o `<CTAButton variant="outline">Contactar
 - 5 escribanías del Litoral (data hardcodeada)
 - Cada card: zona, escribanía, dirección, oficinas RE/MAX, CTA outline "Contactar"
 
+### 7.7 SimuladorPrestamo (`components/simuladores/SimuladorPrestamo.tsx`)
+
+- Client Component (~135 líneas); compone Card, Field y Slider con tokens `solicitante`
+- Inputs:
+  - Valor real de propiedad a hipotecar: slider USD 30.000–500.000, step 5.000 (default 100.000)
+  - Monto solicitado: slider min USD 10.000, max dinámico = 35% del valor de la propiedad, step 1.000 (default 35.000); se clampea si baja la propiedad
+  - Plazo de devolución: 5 botones con TNA visible (9,5% / 10,5% / 11,5% / 12,5% / 13,5%; default 3 años)
+  - Checkbox "Vivienda única y permanente": sin efecto en el cálculo (TODO Lendar)
+- Card de resultado: cuota mensual estimada grande (capital + interés) + línea informativa de comisión inicial e IVA
+
+### 7.8 TablaAmortizacion (`components/simuladores/TablaAmortizacion.tsx`)
+
+- Acordeón nativo `<details>/<summary>`, sin JS extra
+- Columnas: N°, amortización, interés, IVA, cuota total, saldo (post-cuota; última fila cierra en 0)
+- Scroll horizontal en mobile, números tabulares con formatUSD
+
+### 7.9 ContactoPostSimulador (`components/simuladores/ContactoPostSimulador.tsx`)
+
+- Client Component debajo del resultado (antes de la tabla)
+- Formulario: Nombre / Email / Teléfono (primitivos Field + Input)
+- Validación cliente: nombre requerido; email o teléfono al menos uno, formato validado si vienen completos
+- Submit sin backend: confirmación "¡Listo! Un asesor te va a contactar a la brevedad."
+- `handleContactoSubmit` aislado: conectar POST /api/leads será un cambio acotado a esa función
+
+### 7.10 Lógica de cálculo (`lib/calculos.ts`)
+
+Funciones puras sin dependencias de UI; única fuente de verdad financiera.
+
+| Constante | Valor | Nota |
+|---|---|---|
+| `COMISION_INICIAL_PCT` | 0.05 | Informativa, no afecta la cuota |
+| `IVA_PCT` | 0.21 | TODO: confirmar concepto gravado con Lendar |
+| `MONTO_MINIMO_USD` | 10000 | Mínimo de préstamo |
+| `PORCENTAJE_MAXIMO_PROPIEDAD` | 0.35 | Tope monto / valor propiedad |
+| `PLAZOS` | [{anios, tna} × 5] | Única fuente de tasas por plazo |
+
+Funciones: `formatUSD` (Intl es-AR, USD sin decimales), `calcularCuotaPrestamo` (amortización francesa), `calcularAmortizacionPrestamo` (tabla mes a mes con cierre exacto), `calcularMontoMaximo`, `calcularComisionInicial`. Tipos compartidos en `types/simulador.ts`.
+
 ## 8. PÁGINAS EXISTENTES
 
 | Ruta | Descripción |
 |---|---|
 | `/` | Landing principal (placeholder) |
 | `/contacto` | Página de contacto con formulario y lugares de firma |
+| `/simulador-prestamos` | Simulador de préstamo hipotecario |
 
 ## 9. DECISIONES TÉCNICAS Y DE PRODUCTO
 
@@ -226,6 +274,24 @@ Uso: `<CTAButton>Contacto</CTAButton>` o `<CTAButton variant="outline">Contactar
 
 [2026-08] DECISIÓN: Todos los agentes tienen solo permiso de lectura
           RAZÓN: Las modificaciones las aprueba y ejecuta el humano.
+
+[2026-08] DECISIÓN: Lógica financiera en funciones puras con constantes exportadas (lib/calculos.ts)
+          RAZÓN: Única fuente de verdad, reutilizable para el simulador de inversión y testeable sin UI.
+
+[2026-08] DECISIÓN: Simulador dividido en SimuladorPrestamo + TablaAmortizacion + ContactoPostSimulador
+          RAZÓN: Respetar el máximo de 150 líneas por componente y permitir reuso de la tabla.
+
+[2026-08] DECISIÓN: Normalizar primitivos ui/ a tokens neutros y extender Slider con prop accent
+          RAZÓN: Los primitivos usaban zinc-* fuera del design system; ahora cada contexto pasa su accent (accent-solicitante).
+
+[2026-08] DECISIÓN: Contacto post-simulador como formulario Nombre/Email/Teléfono UI-only
+          RAZÓN: Captura directa de datos en eventos; el submit queda aislado para conectar /api/leads después.
+
+[2026-08] DECISIÓN: Rangos de sliders: propiedad 30k–500k step 5k; monto min 10k con max dinámico 35%
+          RAZÓN: El mínimo de propiedad garantiza que el 35% ≥ mínimo del préstamo y elimina el edge case max < min.
+
+[2026-08] PENDIENTE: Efecto de "vivienda única y permanente", concepto gravado por el IVA y tratamiento de la comisión inicial
+          RAZÓN: No inventar reglas de negocio; quedaron como TODO en código a confirmar con Lendar.
 ```
 
 ## 10. CONVENCIONES DE CÓDIGO
