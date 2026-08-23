@@ -1,7 +1,7 @@
 # Lendar — Product Requirements Document
 
-> **Versión: 0.3 — 2026-08-21**
-> Estado: Etapa de simuladores en progreso — design system, página de contacto y simulador de préstamo implementados.
+> **Versión: 0.4 — 2026-08-23**
+> Estado: Etapa de simuladores completa — design system, página de contacto, simulador de préstamo y simulador de inversión implementados.
 
 Cliente: Lendar (red RE/MAX Argentina)
 Proyecto: Plataforma de préstamos hipotecarios P2P
@@ -51,9 +51,13 @@ Proyecto: Plataforma de préstamos hipotecarios P2P
 | Lugares de firma (cards responsive) | [x] Implementado |
 | Supabase configurado (sin uso) | [x] Listo |
 | Simulador de préstamo (`SimuladorPrestamo` + subcomponentes) | [x] Implementado |
+| Simulador de inversión (`SimuladorInversion` + subcomponentes) | [x] Implementado |
 | Cálculo puro + constantes de negocio (`lib/calculos.ts`) | [x] Implementado |
 | Ruta `/simulador-prestamos` | [x] Implementada |
-| Contacto post-simulador (formulario, UI-only) | [x] Implementado |
+| Ruta `/simulador-inversion` (destino de QR) | [x] Implementada |
+| CTA de contacto compartido (`CTAContacto`, accent solicitante/inversor) | [x] Implementado |
+| Tablas de cuotas siempre visibles con scroll interno | [x] Implementado |
+| Variante CTAButton `solid-inversor` | [x] Implementada |
 | Primitivos ui/ normalizados a tokens neutros | [x] Implementado |
 
 ### 3.2 Pendiente
@@ -61,7 +65,6 @@ Proyecto: Plataforma de préstamos hipotecarios P2P
 | Feature | Estado |
 |---|---|
 | Landing principal (`/`) | [ ] Pendiente |
-| Simulador de inversión | [ ] Pendiente |
 | Tracking por query params | [ ] Pendiente |
 | Endpoint de leads (`/api/leads`) | [ ] Pendiente |
 | Migración SQL de la tabla leads | [ ] Pendiente |
@@ -149,9 +152,26 @@ Lead con tipo, inputs, resultado, contacto y origen
 - Tabla mes a mes expandible: N° cuota, amortización, interés, IVA, cuota total, saldo post-cuota
 
 **Contacto post-simulador (UI-only):**
-- Formulario Nombre / Email / Teléfono debajo de la cuota, antes de la tabla
+- `CTAContacto` al pie del simulador: formulario Nombre / Email / Teléfono
 - Validación cliente: nombre requerido; email o teléfono al menos uno, formato validado
 - Confirmación sin backend: "¡Listo! Un asesor te va a contactar a la brevedad."
+
+### 6.5 Simulador de inversión (`/simulador-inversion`)
+
+**Inputs:**
+- Monto a invertir: slider USD 10.000–500.000, step 1.000 (máximo a confirmar con Lendar)
+- Plazo de inversión: mismo selector de 5 botones que en préstamo — 1 año (9,5%) · 2 años (10,5%) · 3 años (11,5%) · 4 años (12,5%) · 5 años (13,5%)
+- Formato de entrega del capital: Efectivo ("Llevás el dinero en efectivo al momento de la firma.") / Transferencia (copy a confirmar con Lendar)
+- Formato de cobro de la cuota: Efectivo ("Te pagan la cuota mensual en efectivo en el domicilio que determines cercano al lugar de firma.") / Transferencia (copy a confirmar con Lendar)
+
+**Resultado:**
+- Cobro mensual estimado destacado en card, con leyenda "Calculado mediante Sistema Francés directo en dólares billete."
+- Bloque Costos: Comisión Lendar (1,5% del monto invertido) — "Se paga por única vez, en efectivo, el día de la firma en la escribanía."
+- Tabla mes a mes siempre visible (sin interacción): N° cuota, amortización, interés, cuota total, saldo post-cuota. **Sin columna IVA** (a diferencia de la tabla de préstamo)
+
+**Contacto post-simulador:** mismo `CTAContacto` compartido con accent `inversor` y botón `solid-inversor`.
+
+**Acceso:** solo por link directo o QR del vendedor; sin links desde Navbar/Footer ni en el home. El componente es reutilizable para la futura landing `/inversores`.
 
 ## 7. ARQUITECTURA DEL SISTEMA
 
@@ -186,6 +206,7 @@ Lead con tipo, inputs, resultado, contacto y origen
 | `/` | Landing principal (placeholder) |
 | `/contacto` | Página de contacto |
 | `/simulador-prestamos` | Simulador de préstamo |
+| `/simulador-inversion` | Simulador de inversión (acceso por link/QR) |
 
 ### 7.4 Seguridad y acceso
 
@@ -228,6 +249,18 @@ Lead con tipo, inputs, resultado, contacto y origen
 
 **Servicios consumidos:** Ninguno aún (futuro: POST /api/leads con origen evento/vendedor)
 
+### Flujo D: Prospecto simula una inversión
+
+```
+1. Entra a /simulador-inversion desde link/QR (origen evento/vendedor: futuro)
+2. Ajusta monto a invertir, plazo y formatos de entrega/cobro
+3. Ve su cobro mensual estimado al instante
+4. Deja sus datos (nombre + email/teléfono) y/o mira la tabla de cuotas
+5. Ve confirmación de contacto (UI-only)
+```
+
+**Servicios consumidos:** Ninguno aún (futuro: POST /api/leads con origen evento/vendedor)
+
 ## 9. REGLAS DE NEGOCIO
 
 1. Los colores de marca se usan vía tokens de Tailwind (nunca hex hardcodeado)
@@ -255,7 +288,7 @@ Lead con tipo, inputs, resultado, contacto y origen
 
 - **Corto plazo:** Landing principal con contenido
 - **Hecho:** Simulador de préstamo (`/simulador-prestamos`)
-- **Corto plazo:** Simulador de inversión
+- **Hecho:** Simulador de inversión (`/simulador-inversion`)
 - **Corto plazo:** Tracking por query params (evento/vendedor)
 - **Corto plazo:** Endpoint de leads y migración SQL
 - **Mediano plazo:** Panel mínimo de consulta de leads por evento/vendedor
@@ -277,3 +310,6 @@ Lead con tipo, inputs, resultado, contacto y origen
 | CTA | Call to Action — botón o enlace que invita a una acción |
 | TNA | Tasa Nominal Anual — se divide por 12 para obtener la tasa mensual |
 | Comisión inicial | Cargo único del 5% del monto solicitado (hoy solo informativa) |
+| Comisión Lendar | Cargo único del 1,5% del monto invertido; se paga en efectivo el día de la firma |
+| Inversor Gold | Escalón documentado (1% para inversión > USD 40.000); pendiente confirmar si aplica al simulador |
+| Formato de entrega/cobro | Modalidad Efectivo o Transferencia para entregar el capital y cobrar la cuota |
