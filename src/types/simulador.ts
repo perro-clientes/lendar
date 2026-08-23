@@ -11,3 +11,8 @@ export interface FilaAmortizacion {
   cuotaTotal: number;
   saldoDeudor: number;
 }
+
+// Sin columna de IVA: la tabla de inversión no la lleva, a diferencia de la de préstamo.
+export type FilaAmortizacionInversion = Omit<FilaAmortizacion, "iva">;
+
+export type FormatoDinero = "efectivo" | "transferencia";
