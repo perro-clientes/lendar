@@ -73,7 +73,11 @@ function SelectorFormato({ label, opciones, valor, onChange }: SelectorFormatoPr
   );
 }
 
-export function SimuladorInversion() {
+interface SimuladorInversionProps {
+  mostrarContacto?: boolean;
+}
+
+export function SimuladorInversion({ mostrarContacto = true }: SimuladorInversionProps) {
   const [montoInvertido, setMontoInvertido] = useState(MONTO_MINIMO_USD);
   const [plazoAnios, setPlazoAnios] = useState(3);
   const [entregaCapital, setEntregaCapital] = useState<FormatoDinero>("efectivo");
@@ -175,7 +179,7 @@ export function SimuladorInversion() {
           <TablaAmortizacionInversion filas={filasAmortizacion} />
         </div>
       </div>
-      <CTAContacto accent="inversor" />
+      {mostrarContacto && <CTAContacto accent="inversor" />}
     </section>
   );
 }
