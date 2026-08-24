@@ -14,10 +14,10 @@ export function Hero() {
         </p>
         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:gap-4">
           <Link href="/pedi-tu-prestamo">
-            <CTAButton variant="solid-white">Quiero pedir un préstamo</CTAButton>
+            <CTAButton variant="solid-white" accent="solicitante">Quiero pedir un préstamo</CTAButton>
           </Link>
           <Link href="/inverti-en-lendar">
-            <CTAButton variant="outline-white">Quiero invertir en Lendar</CTAButton>
+            <CTAButton variant="outline-white" accent="inversor">Quiero invertir en Lendar</CTAButton>
           </Link>
         </div>
       </div>
