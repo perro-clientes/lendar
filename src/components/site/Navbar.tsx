@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { CTAButton } from "./CTAButton";
+import { MobileMenu } from "./MobileMenu";
+import { NavLinks } from "./NavLinks";
 
 export function Navbar() {
   return (
@@ -18,12 +20,13 @@ export function Navbar() {
         </Link>
 
         <div className="flex items-center gap-6">
-          <ul className="hidden items-center gap-6 text-sm font-medium text-text-secondary md:flex">
-            {/* Links de secciones — agregar cuando existan */}
-          </ul>
-          <Link href="/contacto">
-            <CTAButton>Contacto</CTAButton>
-          </Link>
+          <NavLinks />
+          <div className="hidden md:block">
+            <Link href="/contacto">
+              <CTAButton>Contacto</CTAButton>
+            </Link>
+          </div>
+          <MobileMenu />
         </div>
       </nav>
     </header>

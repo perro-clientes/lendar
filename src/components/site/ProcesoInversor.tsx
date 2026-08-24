@@ -55,7 +55,7 @@ export function ProcesoInversor() {
         <ol className="flex flex-col">
           {pasos.map((paso, i) => (
             <li key={paso.titulo} className={`${PASO_STICKY} ${PASO_Z[i]} pb-6 last:pb-0`}>
-              <div className="bg-surface pl-8 md:mt-[30%]">
+              <div className="bg-surface pl-8 md:mt-[50%]">
                 <div className="flex h-full items-start gap-5 md:items-center">
                   <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-inversor-dark text-lg font-bold text-white">
                     {i + 1}
