@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { HeroInversor } from "@/components/site/HeroInversor";
-import { BannerInversor } from "@/components/site/BannerInversor";
+import { Banner } from "@/components/site/Banner";
 import { MarcoLegal } from "@/components/site/MarcoLegal";
-import { ProcesoInversor } from "@/components/site/ProcesoInversor";
+import { Proceso } from "@/components/site/Proceso";
 import { SimuladorInversion } from "@/components/simuladores/SimuladorInversion";
 
 export const metadata: Metadata = {
@@ -16,7 +16,7 @@ export default function InvertiEnLendarPage() {
     <>
       <HeroInversor />
       <MarcoLegal />
-      <ProcesoInversor />
+      <Proceso accent="inversor" />
       <section
         id="simulador"
         className="mx-auto flex w-full max-w-[1200px] scroll-mt-[77px] flex-col gap-8 px-4 pb-16 md:pb-24"
@@ -29,7 +29,7 @@ export default function InvertiEnLendarPage() {
         </div>
         <SimuladorInversion mostrarContacto={false} />
       </section>
-      <BannerInversor />
+      <Banner accent="inversor" />
     </>
   );
 }

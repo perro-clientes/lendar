@@ -90,7 +90,9 @@ export function calcularMontoMaximo(valorPropiedad: number): number {
 }
 
 export function calcularComisionInicial(montoSolicitado: number): number {
-  return montoSolicitado * COMISION_INICIAL_PCT;
+  const comisionBase = montoSolicitado * COMISION_INICIAL_PCT;
+  // IVA confirmado con Lendar: la comisión se informa con IVA incluido (5% + 21%).
+  return comisionBase * (1 + IVA_PCT);
 }
 
 export function calcularAmortizacionInversion(

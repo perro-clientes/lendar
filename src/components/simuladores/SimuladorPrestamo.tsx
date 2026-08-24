@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { CTAContacto } from "@/components/simuladores/CTAContacto";
+import { CostosHonorarios } from "@/components/simuladores/CostosHonorarios";
 import { TablaAmortizacion } from "@/components/simuladores/TablaAmortizacion";
 import { Card } from "@/components/ui/Card";
 import { Field } from "@/components/ui/Field";
@@ -23,7 +24,11 @@ const VALOR_PROPIEDAD_MAX = 500000;
 const VALOR_PROPIEDAD_STEP = 5000;
 const MONTO_STEP = 1000;
 
-export function SimuladorPrestamo() {
+interface SimuladorPrestamoProps {
+  mostrarContacto?: boolean;
+}
+
+export function SimuladorPrestamo({ mostrarContacto = true }: SimuladorPrestamoProps) {
   const [valorPropiedad, setValorPropiedad] = useState(100000);
   const [montoSolicitado, setMontoSolicitado] = useState(35000);
   const [plazoAnios, setPlazoAnios] = useState(3);
@@ -126,8 +131,8 @@ export function SimuladorPrestamo() {
               <span className="text-base text-text-muted">USD/mes</span>
             </p>
             <p className="mt-2 text-xs leading-relaxed text-text-muted max-w-md">
-              Capital e interés · Comisión inicial: {formatUSD(comisionInicial)} ({COMISION_INICIAL_PCT * 100}%) · El IVA
-              sobre intereses se detalla en la tabla.
+              Capital e interés · Comisión inicial: {formatUSD(comisionInicial)} (
+              {COMISION_INICIAL_PCT * 100}% + IVA) · El IVA sobre intereses se detalla en la tabla.
             </p>
           </div>
 
@@ -135,9 +140,9 @@ export function SimuladorPrestamo() {
         </div>
       </div>
 
-      <CTAContacto accent="solicitante" />
+      <CostosHonorarios montoSolicitado={montoSolicitado} />
 
-
+      {mostrarContacto && <CTAContacto accent="solicitante" />}
     </section>
   );
 }
