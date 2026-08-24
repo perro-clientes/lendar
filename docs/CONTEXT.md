@@ -1,7 +1,7 @@
 # CONTEXT — Lendar
 
-> **Estado: Etapa de simuladores en progreso (2026-08-21)**
-> Design system, sitio (Navbar/Footer/contacto) y simulador de préstamo implementados.
+> **Estado: Etapa de simuladores completa (2026-08-23)**
+> Design system, sitio (Navbar/Footer/contacto), simulador de préstamo y simulador de inversión implementados.
 
 ## 1. DESCRIPCIÓN DEL PRODUCTO
 
@@ -22,8 +22,8 @@ Lendar es una plataforma argentina de préstamos hipotecarios P2P, exclusiva par
 [x] Componentes base: Navbar, Footer, CTAButton (con variante solid/outline)
 [x] Página de contacto (/contacto) con formulario y sección "Lugares de firma"
 [x] Simulador de préstamo (/simulador-prestamos): UI, cálculo puro y contacto post-simulador
+[x] Simulador de inversión (/simulador-inversion): UI, cálculo puro y contacto post-simulador
 [ ] Landing principal (pendiente)
-[ ] Simulador de inversión
 [ ] Endpoint de leads
 [ ] Migración SQL
 [ ] Google Analytics
@@ -109,6 +109,8 @@ src/
 │   │   └── page.tsx              → Página de contacto
 │   ├── simulador-prestamos/
 │   │   └── page.tsx              → Página del simulador de préstamo
+│   ├── simulador-inversion/
+│   │   └── page.tsx              → Página del simulador de inversión (destino de QR)
 │   └── api/                      → (vacío, listo para endpoints)
 ├── components/
 │   ├── site/                     → Componentes del sitio
@@ -118,10 +120,12 @@ src/
 │   │   ├── ContactoHero.tsx      → Columna izquierda de contacto
 │   │   ├── ContactoForm.tsx      → Formulario de contacto
 │   │   └── LugaresFirma.tsx      → Grid de cards de escribanías
-│   ├── simuladores/              → Componentes del simulador de préstamo
-│   │   ├── SimuladorPrestamo.tsx → UI principal (Client Component)
-│   │   ├── TablaAmortizacion.tsx → Tabla mes a mes expandible (<details>)
-│   │   └── ContactoPostSimulador.tsx → Formulario de contacto post-cuota (UI-only)
+│   ├── simuladores/              → Componentes de los simuladores
+│   │   ├── SimuladorPrestamo.tsx → UI principal préstamo (Client Component)
+│   │   ├── SimuladorInversion.tsx → UI principal inversión (Client Component)
+│   │   ├── TablaAmortizacion.tsx → Tabla mes a mes préstamo (siempre visible, scroll interno)
+│   │   ├── TablaAmortizacionInversion.tsx → Tabla mes a mes inversión (sin IVA)
+│   │   └── CTAContacto.tsx       → Formulario contacto compartido (accent solicitante/inversor)
 │   └── ui/                       → Primitivos genéricos (tokens neutros)
 │       ├── Button.tsx
 │       ├── Card.tsx
@@ -157,6 +161,7 @@ Botón reutilizable con dos variantes:
 |---|---|---|
 | `solid` (default) | `bg-teal text-white` | `hover:bg-teal-dark` |
 | `outline` | `border-2 border-violet-dark text-violet-dark` | `hover:bg-violet-dark hover:text-white` |
+| `solid-inversor` | `bg-inversor text-white` | `hover:bg-inversor-dark` |
 
 Uso: `<CTAButton>Contacto</CTAButton>` o `<CTAButton variant="outline">Contactar</CTAButton>`
 
@@ -208,19 +213,38 @@ Uso: `<CTAButton>Contacto</CTAButton>` o `<CTAButton variant="outline">Contactar
 
 ### 7.8 TablaAmortizacion (`components/simuladores/TablaAmortizacion.tsx`)
 
-- Acordeón nativo `<details>/<summary>`, sin JS extra
+- Card siempre visible (sin acordeón): ocupa el 100% del alto de su contenedor en desktop (`flex-1` + `min-h-0`)
+- Scroll interno vertical (mobile acotado a `max-h-80`), scroll horizontal por min-width de tabla
 - Columnas: N°, amortización, interés, IVA, cuota total, saldo (post-cuota; última fila cierra en 0)
-- Scroll horizontal en mobile, números tabulares con formatUSD
+- Números tabulares con formatUSD
 
-### 7.9 ContactoPostSimulador (`components/simuladores/ContactoPostSimulador.tsx`)
+### 7.9 CTAContacto (`components/simuladores/CTAContacto.tsx`)
 
-- Client Component debajo del resultado (antes de la tabla)
-- Formulario: Nombre / Email / Teléfono (primitivos Field + Input)
+- Client Component compartido por ambos simuladores; prop `accent`: `solicitante` (default) | `inversor`
+- Formulario: Nombre / Email / Teléfono (primitivos Field + Input); fondo y confirmación toman el token del accent
+- Submit usa variante `solid-inversor` cuando accent es `inversor`; `solid` (teal) en caso contrario
 - Validación cliente: nombre requerido; email o teléfono al menos uno, formato validado si vienen completos
 - Submit sin backend: confirmación "¡Listo! Un asesor te va a contactar a la brevedad."
 - `handleContactoSubmit` aislado: conectar POST /api/leads será un cambio acotado a esa función
 
-### 7.10 Lógica de cálculo (`lib/calculos.ts`)
+### 7.10 SimuladorInversion (`components/simuladores/SimuladorInversion.tsx`)
+
+- Client Component (~150 líneas); compone Card, Field y Slider con tokens `inversor`
+- Componente reutilizable: vivirá en la futura landing `/inversores` y en la ruta dedicada `/simulador-inversion`; nunca en el home ni linkeado desde Navbar/Footer (acceso solo por link directo o QR)
+- Inputs:
+  - Monto a invertir: slider USD 10.000–500.000, step 1.000 (default 10.000; máximo TODO confirmar con Lendar)
+  - Plazo de inversión: mismo selector de 5 botones que préstamo, con TNA visible
+  - Formato de entrega del capital: Efectivo ("Llevás el dinero en efectivo al momento de la firma.") / Transferencia (copy TODO confirmar)
+  - Formato de cobro de la cuota: Efectivo / Transferencia (copy efectivo validado; transferencia TODO confirmar)
+- Card de resultado: cobro mensual estimado grande + leyenda "Calculado mediante Sistema Francés directo en dólares billete."
+- Bloque Costos: Comisión Lendar ({COMISION_INVERSOR_PCT}% del monto invertido) — "Se paga por única vez, en efectivo, el día de la firma en la escribanía."
+
+### 7.11 TablaAmortizacionInversion (`components/simuladores/TablaAmortizacionInversion.tsx`)
+
+- Igual comportamiento que TablaAmortizacion (siempre visible, alto completo, scroll interno)
+- Columnas: N°, amortización, interés, cuota total, saldo — **sin columna IVA** (confirmado en diseño de referencia)
+
+### 7.12 Lógica de cálculo (`lib/calculos.ts`)
 
 Funciones puras sin dependencias de UI; única fuente de verdad financiera.
 
@@ -228,11 +252,12 @@ Funciones puras sin dependencias de UI; única fuente de verdad financiera.
 |---|---|---|
 | `COMISION_INICIAL_PCT` | 0.05 | Informativa, no afecta la cuota |
 | `IVA_PCT` | 0.21 | TODO: confirmar concepto gravado con Lendar |
-| `MONTO_MINIMO_USD` | 10000 | Mínimo de préstamo |
+| `MONTO_MINIMO_USD` | 10000 | Mínimo de préstamo e inversión |
 | `PORCENTAJE_MAXIMO_PROPIEDAD` | 0.35 | Tope monto / valor propiedad |
-| `PLAZOS` | [{anios, tna} × 5] | Única fuente de tasas por plazo |
+| `COMISION_INVERSOR_PCT` | 0.015 | Comisión Lendar del inversor; TODO: escalón Gold (>40k) |
+| `PLAZOS` | [{anios, tna} × 5] | Única fuente de tasas por plazo (compartida préstamo/inversión) |
 
-Funciones: `formatUSD` (Intl es-AR, USD sin decimales), `calcularCuotaPrestamo` (amortización francesa), `calcularAmortizacionPrestamo` (tabla mes a mes con cierre exacto), `calcularMontoMaximo`, `calcularComisionInicial`. Tipos compartidos en `types/simulador.ts`.
+Funciones: `formatUSD` (Intl es-AR, USD sin decimales), `calcularCuotaFrancesa` (helper privado compartido), `calcularCuotaPrestamo` y `calcularCobroInversion` (amortización francesa), `calcularAmortizacionPrestamo` (tabla con IVA) y `calcularAmortizacionInversion` (tabla sin IVA, cierre exacto en 0), `calcularMontoMaximo`, `calcularComisionInicial`, `calcularComisionInversor`. Tipos compartidos en `types/simulador.ts`.
 
 ## 8. PÁGINAS EXISTENTES
 
@@ -241,6 +266,7 @@ Funciones: `formatUSD` (Intl es-AR, USD sin decimales), `calcularCuotaPrestamo` 
 | `/` | Landing principal (placeholder) |
 | `/contacto` | Página de contacto con formulario y lugares de firma |
 | `/simulador-prestamos` | Simulador de préstamo hipotecario |
+| `/simulador-inversion` | Simulador de inversión (destino de QR; sin links en Navbar/Footer) |
 
 ## 9. DECISIONES TÉCNICAS Y DE PRODUCTO
 
@@ -291,6 +317,27 @@ Funciones: `formatUSD` (Intl es-AR, USD sin decimales), `calcularCuotaPrestamo` 
           RAZÓN: El mínimo de propiedad garantiza que el 35% ≥ mínimo del préstamo y elimina el edge case max < min.
 
 [2026-08] PENDIENTE: Efecto de "vivienda única y permanente", concepto gravado por el IVA y tratamiento de la comisión inicial
+          RAZÓN: No inventar reglas de negocio; quedaron como TODO en código a confirmar con Lendar.
+
+[2026-08] DECISIÓN: Simulador de inversión como componente reutilizable con ruta dedicada (/simulador-inversion)
+          RAZÓN: El mismo componente vivirá en la futura landing /inversores; la ruta dedicada es destino de QR del vendedor. Sin links en Navbar/Footer: acceso solo por link directo o QR.
+
+[2026-08] DECISIÓN: Fórmula de amortización francesa en helper privado compartido (calcularCuotaFrancesa)
+          RAZÓN: Préstamo e inversión usan el mismo sistema; una sola fuente de verdad matemática con funciones públicas por dominio.
+
+[2026-08] DECISIÓN: Tabla de inversión sin columna IVA
+          RAZÓN: Confirmado en el diseño de referencia; solo la tabla de préstamo detalla IVA.
+
+[2026-08] DECISIÓN: Tablas de cuotas siempre visibles ocupando el alto del contenedor con scroll interno
+          RAZÓN: Reemplaza el acordeón <details>; evita interacción extra en eventos y muestra el detalle sin clicks.
+
+[2026-08] DECISIÓN: CTA de contacto post-simulador unificado en CTAContacto con prop accent
+          RAZÓN: Ambos simuladores convergieron al mismo formulario Nombre/Email/Teléfono; un solo componente elimina duplicación y centraliza la futura conexión a /api/leads.
+
+[2026-08] DECISIÓN: Variante solid-inversor en CTAButton
+          RAZÓN: El contexto inversor necesita un botón primario violeta manteniendo el patrón sólido.
+
+[2026-08] PENDIENTE: Máximo de inversión (hoy USD 500k por universo de simuladores), copy exacto de transferencias y escalón Inversor Gold (>40k)
           RAZÓN: No inventar reglas de negocio; quedaron como TODO en código a confirmar con Lendar.
 ```
 

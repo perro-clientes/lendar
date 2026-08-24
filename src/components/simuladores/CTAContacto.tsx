@@ -5,6 +5,13 @@ import { CTAButton } from "@/components/site/CTAButton";
 import { Field } from "@/components/ui/Field";
 import { Input } from "@/components/ui/Input";
 
+type Accent = "solicitante" | "inversor";
+
+const ACCENT_CLASSES: Record<Accent, { fondo: string; titulo: string }> = {
+  solicitante: { fondo: "bg-solicitante-light", titulo: "text-solicitante-dark" },
+  inversor: { fondo: "bg-inversor-light", titulo: "text-inversor-dark" },
+};
+
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // Laxa a propósito: acepta +54, espacios, guiones y paréntesis.
 const TELEFONO_REGEX = /^\+?[0-9\s()-]{7,20}$/;
@@ -17,7 +24,11 @@ interface DatosContacto {
 
 const DATOS_INICIALES: DatosContacto = { nombre: "", email: "", telefono: "" };
 
-export function ContactoPostSimulador() {
+interface CTAContactoProps {
+  accent?: Accent;
+}
+
+export function CTAContacto({ accent = "solicitante" }: CTAContactoProps) {
   const [datos, setDatos] = useState<DatosContacto>(DATOS_INICIALES);
   const [error, setError] = useState<string | null>(null);
   const [enviado, setEnviado] = useState(false);
@@ -58,19 +69,23 @@ export function ContactoPostSimulador() {
 
   if (enviado) {
     return (
-      <section aria-live="polite" className="rounded-2xl bg-solicitante-light p-6 text-center">
-        <p className="font-semibold text-solicitante-dark">¡Listo!</p>
+      <section aria-live="polite" className={`rounded-2xl ${ACCENT_CLASSES[accent].fondo} p-6 text-center`}>
+        <p className={`font-semibold ${ACCENT_CLASSES[accent].titulo}`}>¡Listo!</p>
         <p className="mt-1 text-sm text-text-secondary">Un asesor te va a contactar a la brevedad.</p>
       </section>
     );
   }
 
   return (
-    <section className="flex flex-col gap-4 rounded-2xl bg-solicitante-light p-5">
-      <p className="text-sm leading-relaxed text-text-secondary">
-        ¿Querés que te contactemos para ampliarte la información? Dejanos tus datos y un asesor te va a contactar por
-        el medio que prefieras.
-      </p>
+    <section className={`flex flex-col gap-4 rounded-2xl ${ACCENT_CLASSES[accent].fondo} p-5`}>
+      <div className="text-center">
+        <h4 className="font-semibold text-2xl font-serif max-w-xl m-auto">¿Querés que te contactemos para ampliarte la información?</h4>
+        <p className="text-sm leading-relaxed text-text-secondary">
+          Dejanos tus datos y un asesor te va a contactar por el medio que prefieras.
+        </p>
+
+      </div>
+
       <form onSubmit={handleContactoSubmit} noValidate className="flex flex-col gap-3">
         <Field label="Nombre">
           <Input
@@ -106,7 +121,7 @@ export function ContactoPostSimulador() {
             {error}
           </p>
         )}
-        <CTAButton type="submit" className="w-full">
+        <CTAButton type="submit" variant={accent === "inversor" ? "solid-inversor" : "solid"} className="w-full">
           Quiero que me contacten
         </CTAButton>
       </form>

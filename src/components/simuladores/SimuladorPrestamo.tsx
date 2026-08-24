@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ContactoPostSimulador } from "@/components/simuladores/ContactoPostSimulador";
+import { CTAContacto } from "@/components/simuladores/CTAContacto";
 import { TablaAmortizacion } from "@/components/simuladores/TablaAmortizacion";
 import { Card } from "@/components/ui/Card";
 import { Field } from "@/components/ui/Field";
@@ -50,7 +50,7 @@ export function SimuladorPrestamo() {
 
   return (
     <section aria-label="Simulador de préstamo" className="flex flex-col gap-4">
-      <div className="flex flex-col gap-4 md:flex-row items-start md:max-h-[500px] overflow-y-hidden">
+      <div className="flex flex-col gap-4 md:flex-row overflow-y-hidden">
         <Card className="w-full basis-[40%] gap-5 p-6">
           <Slider
             label="Valor real de propiedad a hipotecar"
@@ -135,7 +135,7 @@ export function SimuladorPrestamo() {
         </div>
       </div>
 
-      <ContactoPostSimulador />
+      <CTAContacto accent="solicitante" />
 
 
     </section>

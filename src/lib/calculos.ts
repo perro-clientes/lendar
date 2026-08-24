@@ -1,10 +1,12 @@
-import type { FilaAmortizacion, Plazo } from "@/types/simulador";
+import type { FilaAmortizacion, FilaAmortizacionInversion, Plazo } from "@/types/simulador";
 
 export const COMISION_INICIAL_PCT = 0.05;
 // TODO: confirmar con Lendar si el IVA aplica sobre el interés u otro concepto antes de producción.
 export const IVA_PCT = 0.21;
 export const MONTO_MINIMO_USD = 10000;
 export const PORCENTAJE_MAXIMO_PROPIEDAD = 0.35;
+// TODO: confirmar si aplica escalón Gold (>40k) en este cálculo — no implementado en esta etapa.
+export const COMISION_INVERSOR_PCT = 0.015;
 
 export const PLAZOS: readonly Plazo[] = [
   { anios: 1, tna: 0.095 },
@@ -24,20 +26,33 @@ export function formatUSD(valor: number): string {
   return usdFormatter.format(valor);
 }
 
+// Sistema Francés: cuota fija = (monto * i) / (1 - (1 + i)^-n), con i = TNA/12 y n = cantidad de cuotas.
+function calcularCuotaFrancesa(monto: number, plazoAnios: number, tasaTNA: number): number {
+  const cantidadCuotas = Math.round(plazoAnios * 12);
+  if (cantidadCuotas <= 0 || monto <= 0) {
+    return 0;
+  }
+  const tasaMensual = tasaTNA / 12;
+  if (tasaMensual === 0) {
+    return monto / cantidadCuotas;
+  }
+  return (monto * tasaMensual) / (1 - Math.pow(1 + tasaMensual, -cantidadCuotas));
+}
+
 export function calcularCuotaPrestamo(
   montoSolicitado: number,
   plazoAnios: number,
   tasaTNA: number,
 ): number {
-  const cantidadCuotas = Math.round(plazoAnios * 12);
-  if (cantidadCuotas <= 0 || montoSolicitado <= 0) {
-    return 0;
-  }
-  const tasaMensual = tasaTNA / 12;
-  if (tasaMensual === 0) {
-    return montoSolicitado / cantidadCuotas;
-  }
-  return (montoSolicitado * tasaMensual) / (1 - Math.pow(1 + tasaMensual, -cantidadCuotas));
+  return calcularCuotaFrancesa(montoSolicitado, plazoAnios, tasaTNA);
+}
+
+export function calcularCobroInversion(
+  montoInvertido: number,
+  plazoAnios: number,
+  tasaTNA: number,
+): number {
+  return calcularCuotaFrancesa(montoInvertido, plazoAnios, tasaTNA);
 }
 
 export function calcularAmortizacionPrestamo(
@@ -76,4 +91,36 @@ export function calcularMontoMaximo(valorPropiedad: number): number {
 
 export function calcularComisionInicial(montoSolicitado: number): number {
   return montoSolicitado * COMISION_INICIAL_PCT;
+}
+
+export function calcularAmortizacionInversion(
+  montoInvertido: number,
+  plazoAnios: number,
+  tasaTNA: number,
+): FilaAmortizacionInversion[] {
+  const cantidadCuotas = Math.round(plazoAnios * 12);
+  const cobroBase = calcularCobroInversion(montoInvertido, plazoAnios, tasaTNA);
+  const tasaMensual = tasaTNA / 12;
+  const filas: FilaAmortizacionInversion[] = [];
+  let saldoDeudor = montoInvertido;
+
+  for (let numeroCuota = 1; numeroCuota <= cantidadCuotas; numeroCuota++) {
+    const interes = saldoDeudor * tasaMensual;
+    const esUltimaCuota = numeroCuota === cantidadCuotas;
+    const amortizacion = esUltimaCuota ? saldoDeudor : cobroBase - interes;
+    saldoDeudor -= amortizacion;
+    filas.push({
+      numeroCuota,
+      amortizacion,
+      interes,
+      cuotaTotal: amortizacion + interes,
+      saldoDeudor,
+    });
+  }
+
+  return filas;
+}
+
+export function calcularComisionInversor(montoInvertido: number): number {
+  return montoInvertido * COMISION_INVERSOR_PCT;
 }
