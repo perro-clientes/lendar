@@ -1,7 +1,7 @@
 # Lendar — Product Requirements Document
 
-> **Versión: 0.4 — 2026-08-23**
-> Estado: Etapa de simuladores completa — design system, página de contacto, simulador de préstamo y simulador de inversión implementados.
+> **Versión: 0.5 — 2026-08-24**
+> Estado: Landings de audiencia completas — home con hero, landing de préstamos (marco legal, requisitos, proceso, beneficios, simulador con costos y honorarios, banner) y landing de inversiones.
 
 Cliente: Lendar (red RE/MAX Argentina)
 Proyecto: Plataforma de préstamos hipotecarios P2P
@@ -42,29 +42,34 @@ Proyecto: Plataforma de préstamos hipotecarios P2P
 | Feature | Estado |
 |---|---|
 | Design system (colores, tipografía, tokens) | [x] Implementado |
-| Navbar con logo y CTA "Contacto" | [x] Implementado |
+| Navbar con logo, links de landings y CTA "Contacto" | [x] Implementado |
 | Footer con redes sociales y copyright | [x] Implementado |
-| CTAButton reutilizable (solid/outline) | [x] Implementado |
+| CTAButton reutilizable (5 variantes + accent en variantes white) | [x] Implementado |
+| Home con hero y CTAs por audiencia | [x] Implementado |
 | Página de contacto (`/contacto`) | [x] Implementada |
 | ContactoHero con imagen de fondo | [x] Implementado |
 | ContactoForm con validación cliente | [x] Implementado |
 | Lugares de firma (cards responsive) | [x] Implementado |
 | Supabase configurado (sin uso) | [x] Listo |
 | Simulador de préstamo (`SimuladorPrestamo` + subcomponentes) | [x] Implementado |
+| Bloque "Costos y honorarios" con comisión en vivo | [x] Implementado |
 | Simulador de inversión (`SimuladorInversion` + subcomponentes) | [x] Implementado |
 | Cálculo puro + constantes de negocio (`lib/calculos.ts`) | [x] Implementado |
 | Ruta `/simulador-prestamos` | [x] Implementada |
 | Ruta `/simulador-inversion` (destino de QR) | [x] Implementada |
+| Landing `/pedi-tu-prestamo` completa (6 secciones + banner) | [x] Implementada |
+| Landing `/inverti-en-lendar` completa | [x] Implementada |
+| Componentes de landing compartidos con prop `accent` (MarcoLegal, Proceso, Banner) | [x] Implementados |
+| Secciones Requisitos y Beneficios (landing préstamos) | [x] Implementadas |
 | CTA de contacto compartido (`CTAContacto`, accent solicitante/inversor) | [x] Implementado |
 | Tablas de cuotas siempre visibles con scroll interno | [x] Implementado |
-| Variante CTAButton `solid-inversor` | [x] Implementada |
 | Primitivos ui/ normalizados a tokens neutros | [x] Implementado |
 
 ### 3.2 Pendiente
 
 | Feature | Estado |
 |---|---|
-| Landing principal (`/`) | [ ] Pendiente |
+| Contenido adicional del home (más allá del hero) | [ ] Pendiente |
 | Tracking por query params | [ ] Pendiente |
 | Endpoint de leads (`/api/leads`) | [ ] Pendiente |
 | Migración SQL de la tabla leads | [ ] Pendiente |
@@ -152,9 +157,17 @@ Lead con tipo, inputs, resultado, contacto y origen
 - Tabla mes a mes expandible: N° cuota, amortización, interés, IVA, cuota total, saldo post-cuota
 
 **Contacto post-simulador (UI-only):**
+- Prop `mostrarContacto` (default `true`): visible en la ruta dedicada, oculto en la landing (ahí el cierre lo da el Banner)
 - `CTAContacto` al pie del simulador: formulario Nombre / Email / Teléfono
 - Validación cliente: nombre requerido; email o teléfono al menos uno, formato validado
 - Confirmación sin backend: "¡Listo! Un asesor te va a contactar a la brevedad."
+
+**Costos y honorarios (bloque dentro del simulador):**
+- Ubicado full-width debajo de la tabla de cuotas, encima del formulario de contacto
+- Header con ícono Calculator en violeta (neutro de diferenciación, según referencia)
+- Card Comisión Lendar (violeta): "5% + IVA sobre {monto}" con el total calculado **en vivo** contra el slider (ej.: USD 127.000 → USD 7.684) en box anidado; nota "no se paga por separado: se suma al préstamo"
+- Card Costos de escribanía (teal, estático): compra con financiamiento Lendar 3,25%–5% del valor del inmueble; hipoteca sola 3%–6,5% del monto del préstamo; disclaimer de valores orientativos
+- Alturas parejeas (`items-stretch`) y degradés suaves surface→{accent}-light con borde de tono
 
 ### 6.5 Simulador de inversión (`/simulador-inversion`)
 
@@ -171,7 +184,28 @@ Lead con tipo, inputs, resultado, contacto y origen
 
 **Contacto post-simulador:** mismo `CTAContacto` compartido con accent `inversor` y botón `solid-inversor`.
 
-**Acceso:** solo por link directo o QR del vendedor; sin links desde Navbar/Footer ni en el home. El componente es reutilizable para la futura landing `/inversores`.
+**Acceso:** el componente vive en la landing `/inverti-en-lendar` (con contacto oculto, cierre por Banner) y en la ruta dedicada `/simulador-inversion`, que sigue siendo destino de QR del vendedor (sin links directos en Navbar).
+
+### 6.6 Landing "Pedí tu préstamo" (`/pedi-tu-prestamo`)
+
+Landing completa del solicitante. Estructura: Hero → MarcoLegal → Requisitos → Proceso → Beneficios → Simulador → Banner.
+
+- **Hero**: fondo teal con imagen bg-shape; CTAs "Simulá tu préstamo" (#simulador) y "Conocé el marco legal" (#marco-legal)
+- **Marco legal** (accent solicitante): "Tu préstamo, protegido por ley" + 4 ítems legales con checks
+- **Requisitos**: 2 cards — información del solicitante (teal) e información del inmueble (violeta como neutro de categorización); bullets simples
+- **Proceso** (accent solicitante): 5 pasos sticky-scroll con copy propio de la solicitud
+- **Beneficios**: 4 cards con íconos lucide y acentos alternados teal/violeta (Comprá Hoy, Operación Blindada, Avanzá con Certeza, Más Compradores)
+- **Simulador**: mismo `SimuladorPrestamo` con contacto oculto
+- **Banner** CTA final a `/contacto`: "¿Listo para pedir tu préstamo?"
+
+### 6.7 Landing "Invertí en Lendar" (`/inverti-en-lendar`)
+
+Estructura espejada: Hero → MarcoLegal → Proceso → Simulador → Banner.
+
+- Mismos componentes compartidos con accent inversor; copy de proceso propio del rol inversor
+- Simulador de inversión embebido con contacto oculto; Banner "¿Listo para empezar a invertir?" cierra hacia `/contacto`
+
+> Patrón transversal: los componentes de landing (MarcoLegal, Proceso, Banner) se generalizaron con prop `accent` + mapa de copy interno para evitar duplicación por audiencia.
 
 ## 7. ARQUITECTURA DEL SISTEMA
 
@@ -203,10 +237,12 @@ Lead con tipo, inputs, resultado, contacto y origen
 
 | Ruta | Descripción |
 |---|---|
-| `/` | Landing principal (placeholder) |
+| `/` | Home con hero y CTAs por audiencia |
 | `/contacto` | Página de contacto |
-| `/simulador-prestamos` | Simulador de préstamo |
-| `/simulador-inversion` | Simulador de inversión (acceso por link/QR) |
+| `/pedi-tu-prestamo` | Landing del solicitante (6 secciones + banner) |
+| `/inverti-en-lendar` | Landing del inversor |
+| `/simulador-prestamos` | Simulador de préstamo standalone (con contacto) |
+| `/simulador-inversion` | Simulador de inversión standalone (acceso por link/QR) |
 
 ### 7.4 Seguridad y acceso
 
@@ -240,10 +276,10 @@ Lead con tipo, inputs, resultado, contacto y origen
 ### Flujo C: Prospecto simula un préstamo
 
 ```
-1. Entra a /simulador-prestamos desde link/QR (origen evento/vendedor: futuro)
-2. Ajusta valor de propiedad, monto solicitado y plazo
-3. Ve su cuota mensual estimada al instante
-4. Deja sus datos (nombre + email/teléfono) y/o expande la tabla de cuotas
+1. Entra a /pedi-tu-prestamo (o /simulador-prestamos) desde link/QR o desde el Navbar
+2. Navega las secciones y ajusta valor de propiedad, monto solicitado y plazo
+3. Ve su cuota mensual estimada al instante + comisión Lendar con IVA calculada en vivo
+4. Deja sus datos (nombre + email/teléfono) y/o mira la tabla de cuotas
 5. Ve confirmación de contacto (UI-only)
 ```
 
@@ -252,8 +288,8 @@ Lead con tipo, inputs, resultado, contacto y origen
 ### Flujo D: Prospecto simula una inversión
 
 ```
-1. Entra a /simulador-inversion desde link/QR (origen evento/vendedor: futuro)
-2. Ajusta monto a invertir, plazo y formatos de entrega/cobro
+1. Entra a /inverti-en-lendar (o /simulador-inversion) desde link/QR o desde el Navbar
+2. Navega las secciones y ajusta monto a invertir, plazo y formatos de entrega/cobro
 3. Ve su cobro mensual estimado al instante
 4. Deja sus datos (nombre + email/teléfono) y/o mira la tabla de cuotas
 5. Ve confirmación de contacto (UI-only)
@@ -269,7 +305,7 @@ Lead con tipo, inputs, resultado, contacto y origen
 4. La data de lugares de firma está hardcodeada (pendiente de confirmar con cliente)
 5. Mobile-first: un layout responsive que se adapta a cada dispositivo
 6. La lógica financiera vive en funciones puras con constantes exportadas (única fuente de verdad); sin números sueltos en la UI
-7. Las reglas pendientes de confirmación ("vivienda única y permanente", concepto gravado por el IVA, comisión inicial) van como TODO en código — nunca se inventan
+7. Las reglas pendientes de confirmación ("vivienda única y permanente", concepto gravado por el IVA en la tabla) van como TODO en código — nunca se inventan. La comisión Lendar del solicitante quedó confirmada: se informa con IVA incluido (5% base × 1,21)
 
 ## 10. SUPUESTOS Y RESTRICCIONES
 
@@ -286,9 +322,10 @@ Lead con tipo, inputs, resultado, contacto y origen
 
 ## 11. ROADMAP EVOLUTIVO
 
-- **Corto plazo:** Landing principal con contenido
-- **Hecho:** Simulador de préstamo (`/simulador-prestamos`)
+- **Hecho:** Landing del solicitante (`/pedi-tu-prestamo`) y landing del inversor (`/inverti-en-lendar`)
+- **Hecho:** Simulador de préstamo (`/simulador-prestamos`) con bloque Costos y Honorarios
 - **Hecho:** Simulador de inversión (`/simulador-inversion`)
+- **Corto plazo:** Contenido adicional del home (más allá del hero)
 - **Corto plazo:** Tracking por query params (evento/vendedor)
 - **Corto plazo:** Endpoint de leads y migración SQL
 - **Mediano plazo:** Panel mínimo de consulta de leads por evento/vendedor
