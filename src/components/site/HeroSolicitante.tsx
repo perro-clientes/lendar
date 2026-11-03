@@ -17,9 +17,8 @@ export function HeroSolicitante() {
         </h1>
 
         <p className="max-w-2xl text-lg leading-relaxed text-white/90 md:text-xl">
-          Con Lendar, tu crédito hipotecario lo financian inversores privados de la red RE/MAX
-          Argentina. Accedés a una cuota fija mensual en dólares, con toda la gestión legal,
-          administrativa y escritural coordinada por Lendar.
+          Cuota fija en dólares, financiamiento de hasta el 35% del valor de la propiedad y
+          preaprobación estimada en menos de 7 días hábiles.
         </p>
 
         <div className="flex w-full flex-col gap-4 sm:w-auto sm:flex-row">

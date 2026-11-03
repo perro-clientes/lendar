@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { MONTO_MINIMO_USD, PLAZOS, formatUSD } from "@/lib/calculos";
+import { MONTO_MINIMO_USD, PLAZOS, formatPorcentaje, formatUSD } from "@/lib/calculos";
 import { CTAButton } from "./CTAButton";
 
 type Accent = "solicitante" | "inversor";
@@ -8,7 +8,7 @@ type Accent = "solicitante" | "inversor";
 const PLAZO_MIN = PLAZOS[0];
 const PLAZO_MAX = PLAZOS[PLAZOS.length - 1];
 const RANGO_PLAZOS = `${PLAZO_MIN.anios} a ${PLAZO_MAX.anios} años`;
-const TNA_DESDE = `${(PLAZO_MIN.tna * 100).toFixed(1).replace(".", ",")}%`;
+const TNA_DESDE = formatPorcentaje(PLAZO_MIN.tna);
 
 const CONTENIDO = {
   solicitante: {

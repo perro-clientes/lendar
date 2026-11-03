@@ -1,10 +1,11 @@
 import type { FilaAmortizacion, FilaAmortizacionInversion, Plazo } from "@/types/simulador";
 
 export const COMISION_INICIAL_PCT = 0.05;
-// TODO: confirmar con Lendar si el IVA aplica sobre el interés u otro concepto antes de producción.
 export const IVA_PCT = 0.21;
 export const MONTO_MINIMO_USD = 10000;
 export const PORCENTAJE_MAXIMO_PROPIEDAD = 0.35;
+export const VALOR_PROPIEDAD_STEP = 500;
+export const PENALIDAD_CANCELACION_PCT = 0.05;
 // TODO: confirmar si aplica escalón Gold (>40k) en este cálculo — no implementado en esta etapa.
 export const COMISION_INVERSOR_PCT = 0.015;
 
@@ -26,6 +27,10 @@ export function formatUSD(valor: number): string {
   return usdFormatter.format(valor);
 }
 
+export function formatPorcentaje(tasa: number): string {
+  return `${(tasa * 100).toFixed(1).replace(".", ",")}%`;
+}
+
 // Sistema Francés: cuota fija = (monto * i) / (1 - (1 + i)^-n), con i = TNA/12 y n = cantidad de cuotas.
 function calcularCuotaFrancesa(monto: number, plazoAnios: number, tasaTNA: number): number {
   const cantidadCuotas = Math.round(plazoAnios * 12);
@@ -44,7 +49,7 @@ export function calcularCuotaPrestamo(
   plazoAnios: number,
   tasaTNA: number,
 ): number {
-  return calcularCuotaFrancesa(montoSolicitado, plazoAnios, tasaTNA);
+  return calcularCuotaFrancesa(calcularCapitalFinanciado(montoSolicitado), plazoAnios, tasaTNA);
 }
 
 export function calcularCobroInversion(
@@ -59,16 +64,18 @@ export function calcularAmortizacionPrestamo(
   montoSolicitado: number,
   plazoAnios: number,
   tasaTNA: number,
+  viviendaUnica: boolean,
 ): FilaAmortizacion[] {
   const cantidadCuotas = Math.round(plazoAnios * 12);
   const cuotaBase = calcularCuotaPrestamo(montoSolicitado, plazoAnios, tasaTNA);
   const tasaMensual = tasaTNA / 12;
   const filas: FilaAmortizacion[] = [];
-  let saldoDeudor = montoSolicitado;
+  let saldoDeudor = calcularCapitalFinanciado(montoSolicitado);
 
   for (let numeroCuota = 1; numeroCuota <= cantidadCuotas; numeroCuota++) {
     const interes = saldoDeudor * tasaMensual;
-    const iva = interes * IVA_PCT;
+    // Vivienda única y permanente: los intereses no tributan IVA.
+    const iva = viviendaUnica ? 0 : interes * IVA_PCT;
     const esUltimaCuota = numeroCuota === cantidadCuotas;
     const amortizacion = esUltimaCuota ? saldoDeudor : cuotaBase - interes;
     saldoDeudor -= amortizacion;
@@ -85,14 +92,29 @@ export function calcularAmortizacionPrestamo(
   return filas;
 }
 
-export function calcularMontoMaximo(valorPropiedad: number): number {
-  return Math.max(MONTO_MINIMO_USD, valorPropiedad * PORCENTAJE_MAXIMO_PROPIEDAD);
+export function calcularValorMinimoPropiedad(montoSolicitado: number): number {
+  const valorMinimo = montoSolicitado / PORCENTAJE_MAXIMO_PROPIEDAD;
+  return Math.ceil(valorMinimo / VALOR_PROPIEDAD_STEP) * VALOR_PROPIEDAD_STEP;
 }
 
 export function calcularComisionInicial(montoSolicitado: number): number {
   const comisionBase = montoSolicitado * COMISION_INICIAL_PCT;
   // IVA confirmado con Lendar: la comisión se informa con IVA incluido (5% + 21%).
   return comisionBase * (1 + IVA_PCT);
+}
+
+// La comisión no se paga aparte: se suma al préstamo y se devuelve con la cuota.
+export function calcularCapitalFinanciado(montoSolicitado: number): number {
+  return montoSolicitado + calcularComisionInicial(montoSolicitado);
+}
+
+export function calcularPrecancelacion(filas: FilaAmortizacion[], cuota: number) {
+  const capitalPendiente = filas[cuota - 1].saldoDeudor;
+  const penalidad = capitalPendiente * PENALIDAD_CANCELACION_PCT * (1 + IVA_PCT);
+  const interesesEvitados = filas
+    .slice(cuota)
+    .reduce((suma, fila) => suma + fila.interes + fila.iva, 0);
+  return { capitalPendiente, penalidad, total: capitalPendiente + penalidad, interesesEvitados };
 }
 
 export function calcularAmortizacionInversion(

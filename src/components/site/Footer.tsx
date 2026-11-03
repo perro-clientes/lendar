@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { INSTAGRAM_URL, WHATSAPP_URL } from "@/lib/contacto";
 
 const LENDAR_OFICIAL = "https://www.lendar.com.ar";
 
@@ -22,9 +23,9 @@ const COLUMNAS: { titulo: string; links: FooterLink[] }[] = [
   {
     titulo: "Seguinos",
     links: [
-      { label: "Instagram", href: "https://www.instagram.com/lendarsantafe_arg/", externo: true },
+      { label: "Instagram", href: INSTAGRAM_URL, externo: true },
       { label: "LinkedIn", href: "https://www.linkedin.com/company/lendar", externo: true },
-      { label: "WhatsApp", href: "https://api.whatsapp.com/send?phone=5491141666056", externo: true },
+      { label: "WhatsApp", href: WHATSAPP_URL, externo: true },
     ],
   },
   {

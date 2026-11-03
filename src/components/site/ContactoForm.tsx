@@ -25,7 +25,7 @@ export function ContactoForm() {
     <div className="flex-1 flex p-8 items-center">
       <form onSubmit={handleSubmit} className="bg-white p-8 py-12 rounded-3xl w-full max-w-xl mx-auto flex flex-col gap-6">
         <div className="flex gap-4">
-          <div className="flex-1 flex flex-col gap-1">
+          <div className="flex-1 min-w-0 flex flex-col gap-1">
             <label htmlFor="nombre" className="text-sm font-medium text-text-secondary">
               Nombre
             </label>
@@ -34,10 +34,10 @@ export function ContactoForm() {
               id="nombre"
               name="nombre"
               required
-              className="p-2 rounded-xl border border-border py-2 text-text focus:border-violet-dark outline-none transition-colors"
+              className="w-full p-2 rounded-xl border border-border py-2 text-text focus:border-violet-dark outline-none transition-colors"
             />
           </div>
-          <div className="flex-1 flex flex-col gap-1">
+          <div className="flex-1 min-w-0 flex flex-col gap-1">
             <label htmlFor="apellido" className="text-sm font-medium text-text-secondary">
               Apellido
             </label>
@@ -46,7 +46,7 @@ export function ContactoForm() {
               id="apellido"
               name="apellido"
               required
-              className="p-2 rounded-xl border border-border py-2 text-text focus:border-violet-dark outline-none transition-colors"
+              className="w-full p-2 rounded-xl border border-border py-2 text-text focus:border-violet-dark outline-none transition-colors"
             />
           </div>
         </div>
@@ -60,7 +60,7 @@ export function ContactoForm() {
             id="email"
             name="email"
             required
-            className="p-2 rounded-xl border border-border py-2 text-text focus:border-violet-dark outline-none transition-colors"
+            className="w-full p-2 rounded-xl border border-border py-2 text-text focus:border-violet-dark outline-none transition-colors"
           />
         </div>
 

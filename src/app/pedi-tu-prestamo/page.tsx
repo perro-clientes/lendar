@@ -6,11 +6,12 @@ import { Proceso } from "@/components/site/Proceso";
 import { Beneficios } from "@/components/site/Beneficios";
 import { SimuladorPrestamo } from "@/components/simuladores/SimuladorPrestamo";
 import { Banner } from "@/components/site/Banner";
+import { LugaresFirma } from "@/components/site/LugaresFirma";
 
 export const metadata: Metadata = {
   title: "Pedí tu préstamo",
   description:
-    "Financiá tu próxima propiedad con un préstamo hipotecario en dólares, sin banco, de la mano de la red RE/MAX Argentina.",
+    "Cuota fija en dólares, financiamiento de hasta el 35% del valor de la propiedad y preaprobación estimada en menos de 7 días hábiles.",
 };
 
 export default function PediTuPrestamoPage() {
@@ -35,7 +36,10 @@ export default function PediTuPrestamoPage() {
         </div>
         <SimuladorPrestamo mostrarContacto={false} />
       </section>
-      <Banner accent="solicitante" />
+      <LugaresFirma />
+      <div className="pt-16 md:pt-24">
+        <Banner accent="solicitante" />
+      </div>
     </>
   );
 }

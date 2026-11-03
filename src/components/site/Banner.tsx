@@ -6,7 +6,7 @@ const COPY: Record<Accent, { titulo: string; bajada: string; cta: string }> = {
   solicitante: {
     titulo: "¿Listo para pedir tu préstamo?",
     bajada: "Tomá el primer paso y ponete en contacto con uno de nuestros asesores.",
-    cta: "Contactanos",
+    cta: "Solicitá tu préstamo",
   },
   inversor: {
     titulo: "¿Listo para empezar a invertir?",

@@ -1,22 +1,10 @@
 import { Calculator } from "lucide-react";
 import { COMISION_INICIAL_PCT, calcularComisionInicial, formatUSD } from "@/lib/calculos";
+import { WHATSAPP_URL } from "@/lib/contacto";
 
 interface CostosHonorariosProps {
   montoSolicitado: number;
 }
-
-const COSTOS_ESCRIBANIA = [
-  {
-    titulo: "Compra con financiamiento Lendar",
-    aclaracion: "(incluye compra-venta e hipoteca)",
-    rango: "3,25% – 5%",
-  },
-  {
-    titulo: "Hipoteca sola",
-    aclaracion: "(el inmueble ya es tuyo, no hay compra-venta)",
-    rango: "3% – 6,5%",
-  },
-];
 
 function CardComision({ montoSolicitado }: { montoSolicitado: number }) {
   return (
@@ -46,25 +34,26 @@ function CardComision({ montoSolicitado }: { montoSolicitado: number }) {
 function CardEscribania() {
   return (
     <article className="flex flex-col rounded-2xl border border-teal-lighter bg-linear-to-br from-surface to-teal-light p-6 md:p-8">
-      <h4 className="text-xl font-bold text-teal-dark">Costos de escribanía</h4>
+      <h4 className="text-xl font-bold text-teal-dark">Previsión de costos de escribanía</h4>
 
-      <div className="mt-4 flex flex-col gap-5 md:gap-6">
-        {COSTOS_ESCRIBANIA.map((costo) => (
-          <div key={costo.titulo} className="flex items-baseline justify-between gap-6">
-            <p className="text-sm leading-relaxed text-text md:text-base">
-              {costo.titulo} <span className="text-text-muted">{costo.aclaracion}</span>
-            </p>
-            <p className="shrink-0 text-base font-bold tabular-nums text-text md:text-lg">
-              {costo.rango}
-            </p>
-          </div>
-        ))}
+      <div className="mt-4 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+        <p className="text-sm leading-relaxed text-text md:text-base">
+          Compra con financiamiento Lendar{" "}
+          <span className="text-text-muted">(incluye compra-venta e hipoteca)</span>
+        </p>
+        <a
+          href={WHATSAPP_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="shrink-0 font-bold text-teal-dark underline hover:text-text"
+        >
+          Consultá por WhatsApp
+        </a>
       </div>
 
       <p className="mt-auto pt-6 text-sm italic leading-relaxed text-text-muted">
-        Valores estimados a modo orientativo — no son un presupuesto ni una cotización. El costo
-        final puede variar y Lendar no garantiza esta cifra. Confirmalo siempre con la escribanía a
-        cargo de tu operación.
+        El costo varía según cada caso y plaza. No es un presupuesto ni una cotización, y Lendar no lo
+        garantiza. Confirmalo siempre con la escribanía a cargo de tu operación.
       </p>
     </article>
   );

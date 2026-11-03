@@ -41,6 +41,7 @@ Next.js 16 (App Router), React 19, TypeScript strict, Tailwind CSS v4 (theme ví
 - `src/components/ui/`: primitivos genéricos con tokens neutros.
 - `src/lib/calculos.ts`: funciones financieras puras y constantes de negocio.
 - `src/lib/supabase.ts`: cliente server con service role.
+- `src/lib/contacto.ts`: datos de contacto oficiales de Lendar Litoral; usarlos desde ahí.
 - `src/lib/legales.ts`: lee los textos legales vigentes de lendar.com.ar; no copiarlos al repo.
 - `src/types/simulador.ts`: tipos compartidos.
 
@@ -69,13 +70,13 @@ Next.js 16 (App Router), React 19, TypeScript strict, Tailwind CSS v4 (theme ví
 - `src/lib/calculos.ts` es la única fuente de verdad financiera: tasas, comisiones y topes viven ahí, sin números sueltos en la UI.
 - **Nunca inventar reglas de negocio.** Lo que no esté confirmado por Lendar va como `TODO` en el código y se le avisa al humano.
 - Préstamo e inversión usan amortización francesa, con TNA / 12 como tasa mensual.
-- Comisión del solicitante: se informa con IVA incluido (5% × 1,21). Ejemplo verificado con el cliente: USD 127.000 → USD 7.684.
-- La tabla de préstamo lleva columna de IVA; la de inversión no, y es a propósito.
+- Comisión del solicitante: 5% × 1,21, sumada al capital y financiada dentro de la cuota. Ejemplo: USD 127.000 → USD 7.684.
+- IVA del préstamo: 21% sobre intereses, salvo vivienda única y permanente. La tabla de inversión no lleva IVA, y es a propósito.
+- La referencia oficial para la landing de préstamos es lendarlitoral.ar/solicitantes. Ejemplo verificado: USD 25.000 a 5 años → cuota USD 610.
 
 ### Pendientes de confirmar con Lendar
 
-- Efecto del checkbox "Vivienda única y permanente" (hoy no afecta el cálculo).
-- Concepto gravado por el IVA en la tabla de cuotas.
+- Marco Legal y Beneficios: los valida Lendar; no modificarlos mientras tanto.
 - Máximo de inversión (hoy USD 500.000) y escalón Inversor Gold (más de USD 40.000).
 - Copy de las opciones de transferencia en el simulador de inversión.
 

@@ -1,36 +1,46 @@
 type Acento = "solicitante" | "inversor";
 
+interface Item {
+  texto: string;
+  detalle?: string[];
+}
+
 interface Tarjeta {
   numero: string;
   titulo: string;
   acento: Acento;
-  items: string[];
+  items: Item[];
 }
 
 const TARJETAS: Tarjeta[] = [
   {
     numero: "1",
-    titulo: "Información del solicitante",
+    titulo: "Información de quien solicita el dinero",
     acento: "solicitante",
     items: [
-      "DNI (frente y dorso)",
-      "CUIL",
-      "3 meses de recibos de sueldo o estados de cuenta",
-      "Contrato de alquiler vigente (si aplica)",
-      "Detalle de otras deudas, si las hubiere",
+      { texto: "DNI en PDF" },
+      {
+        texto: "Ingresos en PDF",
+        detalle: [
+          "En relación de dependencia: últimos 3 recibos de sueldo",
+          "Monotributista: facturación de los últimos 6 meses",
+          "Responsable inscripto: facturación de los últimos 6 meses",
+        ],
+      },
     ],
   },
   {
     numero: "2",
-    titulo: "Información del inmueble",
+    titulo: "Información del inmueble a hipotecar",
     // Excepción documentada: violeta como neutro de categorización, no como audiencia Inversor.
     acento: "inversor",
     items: [
-      "Copia de la escritura del inmueble",
-      "Plano de la estructura",
-      "Documentación para escritura (IIBB, API, libre deuda municipal)",
-      "Informe de dominio y condiciones de restricción",
-      "Informe de deuda o estado de cuenta del acreedor (si hay deuda)",
+      { texto: "Escritura del inmueble" },
+      { texto: "Impuesto Inmobiliario y Catastro" },
+      { texto: "Planos de mensura, verificación de estado parcelario" },
+      { texto: "Reserva de la compra-venta conformada con cláusulas Lendar" },
+      { texto: "Si la vende RE/MAX: ficha de publicación" },
+      { texto: "Si no la vende RE/MAX: ACM con detalles, fotos y firma del corredor inmobiliario" },
     ],
   },
 ];
@@ -57,13 +67,22 @@ function TarjetaRequisitos({ tarjeta }: { tarjeta: Tarjeta }) {
       </div>
 
       <ul className="flex flex-col gap-3">
-        {tarjeta.items.map((item) => (
-          <li key={item} className="flex items-start gap-3">
+        {tarjeta.items.map(({ texto, detalle }) => (
+          <li key={texto} className="flex items-start gap-3">
             <span
               aria-hidden
               className={`mt-[0.6em] h-1.5 w-1.5 shrink-0 rounded-full ${clases.circulo}`}
             />
-            <p className="leading-relaxed text-text-secondary">{item}</p>
+            <div className="flex flex-col gap-2 leading-relaxed text-text-secondary">
+              <p>{texto}</p>
+              {detalle && (
+                <ul className="flex list-disc flex-col gap-1 pl-4 text-sm text-text-muted">
+                  {detalle.map((linea) => (
+                    <li key={linea}>{linea}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </li>
         ))}
       </ul>
@@ -80,10 +99,10 @@ export function Requisitos() {
             REQUISITOS
           </span>
           <h2 className="font-serif text-3xl font-bold tracking-wide md:text-5xl">
-            ¿Qué necesito para pedir un Lendar?
+            ¿Qué necesito para pedir un préstamo Lendar?
           </h2>
           <p className="leading-relaxed text-text-muted">
-            Documentación personal y del inmueble que vas a hipotecar.
+            Dos grupos de papeles: los tuyos y los de la propiedad.
           </p>
         </div>
 
