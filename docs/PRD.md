@@ -177,15 +177,16 @@ Lead con tipo, inputs, resultado, contacto y origen
 ### 6.5 Simulador de inversión (`/simulador-inversion`)
 
 **Inputs:**
-- Monto a invertir: slider USD 10.000–500.000, step 1.000 (máximo a confirmar con Lendar)
+- Monto a invertir: slider USD 10.000–300.000, step 1.000, con accesos rápidos
 - Plazo de inversión: mismo selector de 5 botones que en préstamo — 1 año (9,5%) · 2 años (10,5%) · 3 años (11,5%) · 4 años (12,5%) · 5 años (13,5%)
-- Formato de entrega del capital: Efectivo ("Llevás el dinero en efectivo al momento de la firma.") / Transferencia (copy a confirmar con Lendar)
-- Formato de cobro de la cuota: Efectivo ("Te pagan la cuota mensual en efectivo en el domicilio que determines cercano al lugar de firma.") / Transferencia (copy a confirmar con Lendar)
+- Formato de entrega del capital: Efectivo / Transferencia
+- Formato de cobro de la cuota: Efectivo / Transferencia
 
 **Resultado:**
-- Cobro mensual estimado destacado en card, con leyenda "Calculado mediante Sistema Francés directo en dólares billete."
-- Bloque Costos: Comisión Lendar (1,5% del monto invertido) — "Se paga por única vez, en efectivo, el día de la firma en la escribanía."
-- Tabla mes a mes siempre visible (sin interacción): N° cuota, amortización, interés, cuota total, saldo post-cuota. **Sin columna IVA** (a diferencia de la tabla de préstamo)
+- Cobro mensual estimado, plazo y tasa anual, con leyenda "Calculado mediante Sistema Francés directo en dólares billete."
+- CTA "Quiero invertir: charlemos" a `/contacto`
+- Bloque Costos: Comisión Lendar de 1,5% del monto invertido, o 1% desde USD 40.000. Se paga por única vez, en efectivo, el día de la firma
+- Tabla mes a mes siempre visible: N° cuota, amortización, interés, cuota total, saldo post-cuota. **Sin columna IVA**
 
 **Contacto post-simulador:** mismo `CTAContacto` compartido con accent `inversor` y botón `solid-inversor`.
 
@@ -206,10 +207,13 @@ Landing completa del solicitante. Estructura: Hero → MarcoLegal → Requisitos
 
 ### 6.7 Landing "Invertí en Lendar" (`/inverti-en-lendar`)
 
-Estructura espejada: Hero → MarcoLegal → Proceso → Simulador → Banner.
+Estructura: Hero → MarcoLegal → Proceso → Simulador → Respaldo → Si no paga → Lugares de firma → Banner.
 
 - Mismos componentes compartidos con accent inversor; copy de proceso propio del rol inversor
-- Simulador de inversión embebido con contacto oculto; Banner "¿Listo para empezar a invertir?" cierra hacia `/contacto`
+- Simulador de inversión embebido con contacto oculto
+- **Respaldo**: préstamo de hasta 35% del valor real de la propiedad y 65% de margen de cobertura
+- **Si no paga**: filtro previo, seguimiento de mora, interés punitorio y ejecución de la hipoteca como último recurso
+- **Lugares de firma** y Banner "¿Listo para empezar a invertir?" hacia `/contacto`
 
 > Patrón transversal: los componentes de landing (MarcoLegal, Proceso, Banner) se generalizaron con prop `accent` + mapa de copy interno para evitar duplicación por audiencia.
 
@@ -355,6 +359,5 @@ Estructura espejada: Hero → MarcoLegal → Proceso → Simulador → Banner.
 | CTA | Call to Action — botón o enlace que invita a una acción |
 | TNA | Tasa Nominal Anual — se divide por 12 para obtener la tasa mensual |
 | Comisión inicial | Cargo único del 5% + IVA del monto solicitado; se suma al préstamo y se devuelve con la cuota |
-| Comisión Lendar | Cargo único del 1,5% del monto invertido; se paga en efectivo el día de la firma |
-| Inversor Gold | Escalón documentado (1% para inversión > USD 40.000); pendiente confirmar si aplica al simulador |
+| Comisión Lendar | Cargo único del inversor: 1,5% del monto invertido, o 1% desde USD 40.000; se paga en efectivo el día de la firma |
 | Formato de entrega/cobro | Modalidad Efectivo o Transferencia para entregar el capital y cobrar la cuota |

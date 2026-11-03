@@ -1,15 +1,11 @@
-type Accent = "solicitante" | "inversor";
+import { LineaDeTiempo, type PasoLinea } from "./LineaDeTiempo";
 
-interface Paso {
-  titulo: string;
-  subtitulo: string;
-  descripcion: string;
-}
+type Accent = "solicitante" | "inversor";
 
 interface Contenido {
   titulo: string;
   bajada?: string;
-  pasos: Paso[];
+  pasos: PasoLinea[];
 }
 
 const CONTENIDO: Record<Accent, Contenido> = {
@@ -79,22 +75,11 @@ const CONTENIDO: Record<Accent, Contenido> = {
       },
       {
         titulo: "Cobrás tu cuota mensual",
-        subtitulo: "Cada mes, sin interrupciones",
+        subtitulo: "Todos los meses",
         descripcion:
           "Recibís tu cuota mensual en efectivo o por transferencia, en el domicilio o lugar que determinen.",
       },
     ],
-  },
-};
-
-const ACENTO_CLASSES: Record<Accent, { etiqueta: string; circulo: string }> = {
-  solicitante: {
-    etiqueta: "bg-solicitante-light text-solicitante-dark",
-    circulo: "bg-solicitante-dark",
-  },
-  inversor: {
-    etiqueta: "bg-inversor-light text-inversor-dark",
-    circulo: "bg-inversor-dark",
   },
 };
 
@@ -104,7 +89,6 @@ interface ProcesoProps {
 
 export function Proceso({ accent }: ProcesoProps) {
   const contenido = CONTENIDO[accent];
-  const clases = ACENTO_CLASSES[accent];
 
   return (
     <section id="paso-a-paso" className="mx-auto max-w-7xl scroll-mt-[77px] px-4 py-16 md:py-24">
@@ -117,30 +101,7 @@ export function Proceso({ accent }: ProcesoProps) {
             <p className="text-lg leading-relaxed text-text-secondary">{contenido.bajada}</p>
           )}
         </div>
-
-        <ol className="flex flex-col">
-          {contenido.pasos.map((paso, i) => (
-            <li key={paso.titulo} className="flex gap-5">
-              <div className="flex flex-col items-center">
-                <span
-                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-bold text-white ${clases.circulo}`}
-                >
-                  {i + 1}
-                </span>
-                {i < contenido.pasos.length - 1 && (
-                  <span aria-hidden className="w-px flex-1 bg-border" />
-                )}
-              </div>
-              <div className="flex flex-col items-start gap-2 pb-8 pt-1.5">
-                <h3 className="text-lg leading-snug font-bold text-text md:text-xl">{paso.titulo}</h3>
-                <p className={`rounded-full px-3 py-1 text-xs font-semibold ${clases.etiqueta}`}>
-                  {paso.subtitulo}
-                </p>
-                <p className="leading-relaxed text-text-muted">{paso.descripcion}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
+        <LineaDeTiempo accent={accent} pasos={contenido.pasos} />
       </div>
     </section>
   );

@@ -48,7 +48,7 @@ export function LugaresFirma() {
           <h2 className="text-4xl md:text-5xl font-serif font-semibold text-center mb-4">
             Lugares de firma
           </h2>
-          <p className="text-lg text-text-muted">Escribanías con las que trabajamos, según tu oficina RE/MAX.</p>
+          <p className="text-lg text-text-muted">Escribanías con las que trabajamos, según la oficina RE/MAX.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

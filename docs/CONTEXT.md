@@ -25,7 +25,7 @@ Lendar es una plataforma argentina de préstamos hipotecarios P2P, exclusiva par
 [x] Simulador de préstamo: UI, cálculo puro, bloque Costos y Honorarios, contacto post-simulador
 [x] Simulador de inversión: UI, cálculo puro y contacto post-simulador
 [x] Landing /pedi-tu-prestamo completa: Hero → MarcoLegal → Requisitos → Proceso → Beneficios → Simulador → Banner
-[x] Landing /inverti-en-lendar completa: Hero → MarcoLegal → Proceso → Simulador → Banner
+[x] Landing /inverti-en-lendar completa: Hero → MarcoLegal → Proceso → Simulador → Respaldo → Si no paga → Lugares de firma → Banner
 [ ] Endpoint de leads
 [ ] Migración SQL
 [ ] Google Analytics
@@ -138,7 +138,10 @@ src/
 │   │   ├── HeroInversor.tsx      → Hero landing inversiones (fondo violet + imagen, CTAs ancla)
 │   │   ├── MarcoLegal.tsx        → Sección marco legal (prop accent; copy por audiencia; id="marco-legal")
 │   │   ├── Requisitos.tsx        → Sección requisitos (2 cards: solicitante/inmueble) — solo landing préstamos
-│   │   ├── Proceso.tsx           → Sección proceso sticky-scroll (prop accent; copy por audiencia)
+│   │   ├── Proceso.tsx           → Sección paso a paso (prop accent; copy por audiencia)
+│   │   ├── LineaDeTiempo.tsx     → Lista de pasos numerados compartida
+│   │   ├── RespaldoInversion.tsx → Sección de respaldo 35/65 — solo landing inversiones
+│   │   ├── SiNoPaga.tsx          → Qué pasa ante la mora — solo landing inversiones
 │   │   ├── Beneficios.tsx        → Sección beneficios (4 cards, íconos lucide) — solo landing préstamos
 │   │   ├── Banner.tsx            → Banner CTA final de landings (prop accent)
 │   │   ├── ContactoHero.tsx      → Columna izquierda de contacto
@@ -153,6 +156,8 @@ src/
 │   │   ├── CostosHonorarios.tsx  → Bloque costos del simulador de préstamo (comisión en vivo + escribanía)
 │   │   ├── TablaAmortizacion.tsx → Tabla mes a mes préstamo (siempre visible, scroll interno)
 │   │   ├── TablaAmortizacionInversion.tsx → Tabla mes a mes inversión (sin IVA)
+│   │   ├── ResultadoInversion.tsx → Cobro mensual, datos, CTA y costos de la inversión
+│   │   ├── SelectorFormato.tsx   → Botones de formato de entrega y cobro
 │   │   └── CTAContacto.tsx       → Formulario contacto compartido (accent solicitante/inversor)
 │   └── ui/                       → Primitivos genéricos (tokens neutros)
 │       ├── Button.tsx
@@ -263,10 +268,10 @@ Botón reutilizable con seis variantes; las `-white` aceptan prop `accent` (`sol
 - Grid `lg:grid-cols-2`: "Información de quien solicita el dinero" (tokens solicitante) e "Información del inmueble a hipotecar" (violeta como neutro de categorización)
 - Listas alineadas con lendarlitoral.ar/solicitantes; ingresos con detalle según situación laboral
 
-### 7.11 Proceso (`components/site/Proceso.tsx`)
+### 7.11 Proceso y LineaDeTiempo (`components/site/Proceso.tsx`, `LineaDeTiempo.tsx`)
 
-- Prop `accent`; copy por audiencia vía mapa interno (5 pasos con título, etiqueta y descripción); `id="paso-a-paso"`
-- Línea de tiempo simple: encabezado a la izquierda (sticky en desktop) y pasos numerados unidos por una línea. Sin efecto de superposición
+- `Proceso`: prop `accent`; copy por audiencia vía mapa interno (5 pasos con título, etiqueta y descripción); `id="paso-a-paso"`
+- `LineaDeTiempo`: pasos numerados unidos por una línea, con detalle opcional. Lo comparten `Proceso` y `SiNoPaga`
 - En préstamos, la etiqueta muestra el plazo estimado de cada paso
 
 ### 7.12 Beneficios (`components/site/Beneficios.tsx`) — solo landing préstamos
@@ -311,15 +316,19 @@ Botón reutilizable con seis variantes; las `-white` aceptan prop `accent` (`sol
 
 ### 7.17 SimuladorInversion (`components/simuladores/SimuladorInversion.tsx`)
 
-- Client Component (~185 líneas); compone Card, Field y Slider con tokens `inversor`
+- Client Component; compone Card, Slider, `SelectorPlazo`, `SelectorFormato` y `ResultadoInversion` con tokens `inversor`
 - Componente reutilizable: vive en la landing `/inverti-en-lendar` (con `mostrarContacto={false}`) y en la ruta dedicada `/simulador-inversion`; nunca en el home
-- Inputs:
-  - Monto a invertir: slider USD 10.000–500.000, step 1.000 (default 10.000; máximo TODO confirmar con Lendar)
-  - Plazo de inversión: mismo selector de 5 botones que préstamo, con TNA visible
-  - Formato de entrega del capital: Efectivo ("Llevás el dinero en efectivo al momento de la firma.") / Transferencia (copy TODO confirmar)
-  - Formato de cobro de la cuota: Efectivo / Transferencia (copy efectivo validado; transferencia TODO confirmar)
-- Card de resultado: cobro mensual estimado grande + leyenda "Calculado mediante Sistema Francés directo en dólares billete."
-- Bloque Costos: Comisión Lendar ({COMISION_INVERSOR_PCT}% del monto invertido) — "Se paga por única vez, en efectivo, el día de la firma en la escribanía."
+- Reglas alineadas con lendarlitoral.ar/inversores:
+  - Monto a invertir: USD 10.000–300.000, step 1.000 (default 10.000), con accesos rápidos
+  - Plazo: mismo selector de 5 botones que préstamo (default 5 años)
+  - Formatos de entrega y cobro: Efectivo / Transferencia, con copy oficial
+- `ResultadoInversion`: cobro mensual, plazo, tasa, CTA "Quiero invertir: charlemos" a `/contacto` y costos
+- Comisión Lendar: 1,5% del monto invertido; 1% desde USD 40.000. Se paga por única vez, en efectivo, el día de la firma
+
+### 7.17.1 RespaldoInversion y SiNoPaga (landing inversiones)
+
+- `RespaldoInversion`: relación 35% préstamo / 65% margen de cobertura, derivada de `PORCENTAJE_MAXIMO_PROPIEDAD`
+- `SiNoPaga`: filtro previo, cuota atrasada, punitorio y ejecución. La tasa punitoria de ejemplo se calcula con `calcularTasaPunitoria`
 
 ### 7.18 TablaAmortizacionInversion (`components/simuladores/TablaAmortizacionInversion.tsx`)
 
@@ -347,10 +356,13 @@ Funciones puras sin dependencias de UI; única fuente de verdad financiera.
 | `PORCENTAJE_MAXIMO_PROPIEDAD` | 0.35 | Tope monto / valor propiedad |
 | `VALOR_PROPIEDAD_STEP` | 500 | Paso del slider de propiedad y redondeo del valor mínimo |
 | `PENALIDAD_CANCELACION_PCT` | 0.05 | Penalidad por cancelación total, más IVA, sobre el capital pendiente |
-| `COMISION_INVERSOR_PCT` | 0.015 | Comisión Lendar del inversor; TODO: escalón Gold (>40k) |
+| `COMISION_INVERSOR_PCT` | 0.015 | Comisión Lendar del inversor por debajo de USD 40.000 |
+| `COMISION_INVERSOR_GOLD_PCT` | 0.01 | Comisión Lendar del inversor desde `MONTO_INVERSOR_GOLD_USD` |
+| `MONTO_INVERSOR_GOLD_USD` | 40000 | Monto desde el que aplica la comisión reducida |
+| `RECARGO_PUNITORIO_PCT` | 0.5 | Suba del interés pactado durante la mora |
 | `PLAZOS` | [{anios, tna} × 5] | Única fuente de tasas por plazo (compartida préstamo/inversión) |
 
-Funciones: `formatUSD` (Intl es-AR, USD sin decimales), `calcularCuotaFrancesa` (helper privado compartido), `calcularCuotaPrestamo` y `calcularCobroInversion` (amortización francesa), `calcularAmortizacionPrestamo` (tabla con IVA) y `calcularAmortizacionInversion` (tabla sin IVA, cierre exacto en 0), `calcularValorMinimoPropiedad`, `calcularComisionInicial`, `calcularCapitalFinanciado`, `calcularPrecancelacion`, `formatPorcentaje`, `calcularComisionInversor`. Tipos compartidos en `types/simulador.ts`.
+Funciones: `formatUSD` (Intl es-AR, USD sin decimales), `calcularCuotaFrancesa` (helper privado compartido), `calcularCuotaPrestamo` y `calcularCobroInversion` (amortización francesa), `calcularAmortizacionPrestamo` (tabla con IVA) y `calcularAmortizacionInversion` (tabla sin IVA, cierre exacto en 0), `calcularValorMinimoPropiedad`, `calcularComisionInicial`, `calcularCapitalFinanciado`, `calcularPrecancelacion`, `obtenerComisionInversorPct`, `calcularTasaPunitoria`, `formatPorcentaje`, `calcularComisionInversor`. Tipos compartidos en `types/simulador.ts`.
 
 ## 8. PÁGINAS EXISTENTES
 
@@ -359,7 +371,7 @@ Funciones: `formatUSD` (Intl es-AR, USD sin decimales), `calcularCuotaFrancesa` 
 | `/` | Home: Hero → Préstamos → Inversiones → Finanzas colaborativas |
 | `/contacto` | Página de contacto con formulario y lugares de firma |
 | `/pedi-tu-prestamo` | Landing del solicitante: Hero → MarcoLegal → Requisitos → Proceso → Beneficios → Simulador (con costos y precancelación) → Lugares de firma → Banner |
-| `/inverti-en-lendar` | Landing del inversor: Hero → MarcoLegal → Proceso → Simulador → Banner |
+| `/inverti-en-lendar` | Landing del inversor: Hero → MarcoLegal → Proceso → Simulador → Respaldo → Si no paga → Lugares de firma → Banner |
 | `/simulador-prestamos` | Simulador de préstamo standalone (con contacto incluido) |
 | `/simulador-inversion` | Simulador de inversión standalone (destino de QR; sin links en Navbar) |
 | `/terminos-y-condiciones` | Términos y condiciones, con el texto vigente de lendar.com.ar |
@@ -431,9 +443,6 @@ Funciones: `formatUSD` (Intl es-AR, USD sin decimales), `calcularCuotaFrancesa` 
 [2026-08] DECISIÓN: Variante solid-inversor en CTAButton
           RAZÓN: El contexto inversor necesita un botón primario violeta manteniendo el patrón sólido.
 
-[2026-08] PENDIENTE: Máximo de inversión (hoy USD 500k por universo de simuladores), copy exacto de transferencias y escalón Inversor Gold (>40k)
-          RAZÓN: No inventar reglas de negocio; quedaron como TODO en código a confirmar con Lendar.
-
 [2026-08-24] DECISIÓN: Variantes solid-white/outline-white de CTAButton con prop accent, replicando las animaciones hover de los CTAs de landings
           RAZÓN: El home usaba hovers distintos (gris plano / overlay translúcido); un solo lenguaje de CTA en todo el sitio.
 
@@ -481,6 +490,12 @@ Funciones: `formatUSD` (Intl es-AR, USD sin decimales), `calcularCuotaFrancesa` 
 
 [2026-11-03] DECISIÓN: "Solicitá tu préstamo" lleva a /contacto, no al registro de app.lendar.com.ar
           RAZÓN: Definido por el cliente. El paso 1 del proceso ya no menciona registro.
+
+[2026-11-03] DECISIÓN: lendarlitoral.ar/inversores es la referencia de la landing de inversiones; se suman respaldo, mora y Lugares de firma sin cambiar el orden del simulador
+          RAZÓN: Mismo criterio que en préstamos. Monto máximo USD 300.000, comisión de 1% desde USD 40.000 y copy de transferencias tomados de la oficial; simulador verificado en cuatro escenarios.
+
+[2026-11-03] PENDIENTE: Lendar confirma el paso a paso del inversor (no está en la página oficial, incluye 24–48 hs) y si la comisión lleva IVA (lendar.com.ar dice "+ IVA"; lendarlitoral.ar no)
+          RAZÓN: Las fuentes difieren o no hay respaldo; no inventar reglas de negocio.
 
 [2026-11-03] PENDIENTE: Lendar valida Marco Legal y Beneficios, que no están en la página oficial
           RAZÓN: Validación a cargo de Lendar; no se modifican mientras tanto.

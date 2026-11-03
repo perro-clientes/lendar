@@ -6,8 +6,10 @@ export const MONTO_MINIMO_USD = 10000;
 export const PORCENTAJE_MAXIMO_PROPIEDAD = 0.35;
 export const VALOR_PROPIEDAD_STEP = 500;
 export const PENALIDAD_CANCELACION_PCT = 0.05;
-// TODO: confirmar si aplica escalón Gold (>40k) en este cálculo — no implementado en esta etapa.
 export const COMISION_INVERSOR_PCT = 0.015;
+export const COMISION_INVERSOR_GOLD_PCT = 0.01;
+export const MONTO_INVERSOR_GOLD_USD = 40000;
+export const RECARGO_PUNITORIO_PCT = 0.5;
 
 export const PLAZOS: readonly Plazo[] = [
   { anios: 1, tna: 0.095 },
@@ -27,8 +29,8 @@ export function formatUSD(valor: number): string {
   return usdFormatter.format(valor);
 }
 
-export function formatPorcentaje(tasa: number): string {
-  return `${(tasa * 100).toFixed(1).replace(".", ",")}%`;
+export function formatPorcentaje(tasa: number, decimales = 1): string {
+  return `${(tasa * 100).toFixed(decimales).replace(".", ",")}%`;
 }
 
 // Sistema Francés: cuota fija = (monto * i) / (1 - (1 + i)^-n), con i = TNA/12 y n = cantidad de cuotas.
@@ -145,6 +147,14 @@ export function calcularAmortizacionInversion(
   return filas;
 }
 
+export function obtenerComisionInversorPct(montoInvertido: number): number {
+  return montoInvertido >= MONTO_INVERSOR_GOLD_USD ? COMISION_INVERSOR_GOLD_PCT : COMISION_INVERSOR_PCT;
+}
+
 export function calcularComisionInversor(montoInvertido: number): number {
-  return montoInvertido * COMISION_INVERSOR_PCT;
+  return montoInvertido * obtenerComisionInversorPct(montoInvertido);
+}
+
+export function calcularTasaPunitoria(tasaTNA: number): number {
+  return tasaTNA * (1 + RECARGO_PUNITORIO_PCT);
 }

@@ -73,12 +73,13 @@ Next.js 16 (App Router), React 19, TypeScript strict, Tailwind CSS v4 (theme ví
 - Comisión del solicitante: 5% × 1,21, sumada al capital y financiada dentro de la cuota. Ejemplo: USD 127.000 → USD 7.684.
 - IVA del préstamo: 21% sobre intereses, salvo vivienda única y permanente. La tabla de inversión no lleva IVA, y es a propósito.
 - La referencia oficial para la landing de préstamos es lendarlitoral.ar/solicitantes. Ejemplo verificado: USD 25.000 a 5 años → cuota USD 610.
+- La referencia oficial para la landing de inversiones es lendarlitoral.ar/inversores. Comisión: 1,5%, o 1% desde USD 40.000. Ejemplo verificado: USD 10.000 a 5 años → cobro USD 230.
 
 ### Pendientes de confirmar con Lendar
 
 - Marco Legal y Beneficios: los valida Lendar; no modificarlos mientras tanto.
-- Máximo de inversión (hoy USD 500.000) y escalón Inversor Gold (más de USD 40.000).
-- Copy de las opciones de transferencia en el simulador de inversión.
+- Paso a paso del inversor: no está en la página oficial y menciona 24–48 hs.
+- Comisión del inversor: lendar.com.ar indica "+ IVA"; lendarlitoral.ar no. Hoy se sigue la segunda.
 
 ## Seguridad
 
@@ -102,4 +103,3 @@ Ante una contradicción, el código y `docs/CONTEXT.md` mandan sobre estos archi
 
 - `README.md` está desactualizado: menciona Zod (no instalado), `src/lib/env.ts` (no existe) y las rutas `/simular-prestamo` y `/simular-inversion`.
 - Los encabezados de `agents/*.md` todavía dicen que el proyecto está reseteado.
-- Incumplen las convenciones: `SimuladorInversion.tsx` (185 líneas), `Proceso.tsx` (157 líneas). No los corrijas de paso; proponelo como cambio aparte.

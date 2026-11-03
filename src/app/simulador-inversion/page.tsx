@@ -8,8 +8,8 @@ export const metadata: Metadata = {
 
 export default function SimularInversionPage() {
   return (
-    <main className="mx-auto flex w-full max-w-[1000px] flex-1 flex-col px-4 py-10">
+    <div className="mx-auto flex w-full max-w-[1000px] flex-1 flex-col px-4 py-10">
       <SimuladorInversion />
-    </main>
+    </div>
   );
 }

@@ -17,9 +17,8 @@ export function HeroInversor() {
         </h1>
 
         <p className="max-w-2xl text-lg leading-relaxed text-white/90 md:text-xl">
-          Con Lendar, tu capital financia créditos hipotecarios de clientes de la red RE/MAX
-          Argentina. Cobrás una renta mensual fija en dólares, con garantía hipotecaria de primer
-          grado sobre la propiedad.
+          Cobrás una renta mensual fija en dólares, respaldada por hipoteca de primer grado sobre la
+          propiedad.
         </p>
 
         <div className="flex w-full flex-col gap-4 sm:w-auto sm:flex-row">
