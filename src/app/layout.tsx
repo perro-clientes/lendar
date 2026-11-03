@@ -15,6 +15,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 
 const robotoSerif = Roboto_Serif({
   subsets: ["latin"],
+  style: ["normal", "italic"],
   variable: "--font-roboto-serif",
   display: "swap",
 });
@@ -38,7 +39,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="es" className={`${plusJakartaSans.variable} ${robotoSerif.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col bg-surface text-text">
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />

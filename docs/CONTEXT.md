@@ -1,7 +1,7 @@
 # CONTEXT — Lendar
 
-> **Estado: Landings de audiencia completas (2026-08-24)**
-> Design system, sitio (Navbar/Footer/contacto/home), landing de préstamos completa (marco legal, requisitos, proceso, beneficios, simulador + costos y honorarios, banner) y landing de inversiones.
+> **Estado: Home y landings de audiencia completas (2026-11-03)**
+> Design system, sitio (Navbar/Footer/contacto), home de 4 secciones, landing de préstamos completa (marco legal, requisitos, proceso, beneficios, simulador + costos y honorarios, banner) y landing de inversiones.
 
 ## 1. DESCRIPCIÓN DEL PRODUCTO
 
@@ -21,12 +21,11 @@ Lendar es una plataforma argentina de préstamos hipotecarios P2P, exclusiva par
 [x] Design system: paleta de colores (teal/violet) y tipografía (Plus Jakarta Sans + Roboto Serif)
 [x] Componentes base: Navbar (con links + mobile menu), Footer, CTAButton (5 variantes + prop accent)
 [x] Página de contacto (/contacto) con formulario y sección "Lugares de firma"
-[x] Home con hero y CTAs por audiencia
+[x] Home: Hero → Préstamos → Inversiones → Finanzas colaborativas
 [x] Simulador de préstamo: UI, cálculo puro, bloque Costos y Honorarios, contacto post-simulador
 [x] Simulador de inversión: UI, cálculo puro y contacto post-simulador
 [x] Landing /pedi-tu-prestamo completa: Hero → MarcoLegal → Requisitos → Proceso → Beneficios → Simulador → Banner
 [x] Landing /inverti-en-lendar completa: Hero → MarcoLegal → Proceso → Simulador → Banner
-[ ] Contenido adicional del home (más allá del hero)
 [ ] Endpoint de leads
 [ ] Migración SQL
 [ ] Google Analytics
@@ -55,7 +54,7 @@ Lendar es una plataforma argentina de préstamos hipotecarios P2P, exclusiva par
 | Token | Fuente | Props |
 |---|---|---|
 | `--font-sans` | Plus Jakarta Sans | Pesos 200-800, variable |
-| `--font-serif` | Roboto Serif | Variable (4 ejes: weight, width, opsz, grade) |
+| `--font-serif` | Roboto Serif | Variable; estilos normal e itálica |
 
 ### 4.2 Colores de marca
 
@@ -85,8 +84,9 @@ Lendar es una plataforma argentina de préstamos hipotecarios P2P, exclusiva par
 
 | Token | Valor | Uso |
 |---|---|---|
-| `background` | #f4f5f7 | Fondo de página |
-| `surface` | #ffffff | Superficies, cards |
+| `background` | #f4f5f7 | Fondos suaves de secciones y cards |
+| `surface` | #ffffff | Fondo de página (`body`), superficies, cards |
+| `foto-fondo` | #ededed | Fondo del hero del home; coincide con el degradé de su foto |
 | `border` | #e4e6ea | Bordes |
 | `text` | #1a1d23 | Texto primario |
 | `text-secondary` | #374151 | Texto secundario |
@@ -95,7 +95,7 @@ Lendar es una plataforma argentina de préstamos hipotecarios P2P, exclusiva par
 
 ### 4.5 Criterios transversales
 
-- **Títulos de sección**: siempre `font-serif` (Roboto Serif), bold, escala `text-3xl md:text-5xl` — criterio confirmado por diseño aunque alguna referencia pida sans.
+- **Títulos de sección**: siempre `font-serif` (Roboto Serif), escala `text-3xl md:text-5xl` — criterio confirmado por diseño aunque alguna referencia pida sans. En el home: peso medio con una frase final en itálica (`<em>` peso normal), sin eyebrow. Las landings mantienen bold hasta que se migren.
 - **Acentos como neutros de diferenciación**: dentro de la landing de préstamos, teal/violeta se usan alternados para distinguir categorías (card del inmueble en Requisitos, cards de Beneficios, header de Costos y Honorarios) **sin** referencia a la audiencia Inversor — patrón confirmado con el cliente.
 - **CTA de landings sobre fondos de color**: primario = relleno blanco + texto `{accent}-dark`, hover `{accent}-light`; secundario outline = borde blanco + hover con relleno blanco y texto `{accent}-dark`. Las variantes `-white` de CTAButton replican exactamente estas animaciones.
 
@@ -114,7 +114,7 @@ src/
 ├── app/
 │   ├── globals.css               → Theme de Tailwind (colores, fuentes)
 │   ├── layout.tsx                → Layout global (Navbar + main + Footer)
-│   ├── page.tsx                  → Landing principal (placeholder)
+│   ├── page.tsx                  → Home (Hero, SeccionAudiencia ×2, FinanzasColaborativas)
 │   ├── contacto/
 │   │   └── page.tsx              → Página de contacto
 │   ├── simulador-prestamos/
@@ -128,8 +128,10 @@ src/
 │   │   ├── NavLinks.tsx          → Links Préstamos/Inversiones con estado activo (Client)
 │   │   ├── MobileMenu.tsx        → Menú hamburguesa mobile (Client)
 │   │   ├── Footer.tsx            → Pie de página con redes sociales
-│   │   ├── CTAButton.tsx         → Botón CTA (5 variantes + prop accent para variantes white)
-│   │   ├── Hero.tsx              → Hero del home (degradé teal→violet, CTAs por audiencia)
+│   │   ├── CTAButton.tsx         → Botón CTA (6 variantes + prop accent para variantes white)
+│   │   ├── Hero.tsx              → Hero del home (foto, H1 y CTAs por audiencia)
+│   │   ├── SeccionAudiencia.tsx  → Sección dividida imagen/texto del home (prop accent)
+│   │   ├── FinanzasColaborativas.tsx → Sección del home con explicación y 6 servicios
 │   │   ├── HeroSolicitante.tsx   → Hero landing préstamos (fondo teal + imagen, CTAs a #simulador/#marco-legal)
 │   │   ├── HeroInversor.tsx      → Hero landing inversiones (fondo violet + imagen, CTAs ancla)
 │   │   ├── MarcoLegal.tsx        → Sección marco legal (prop accent; copy por audiencia; id="marco-legal")
@@ -164,8 +166,9 @@ src/
     │   ├── isologo-lendar.png
     │   ├── lendar-favicon.svg
     │   └── lendar-favicon.png
-    └── miscellaneous/
-        └── bg-shape-v29.png      → Imagen de fondo para hero de contacto
+    └── miscelaneous/
+        ├── bg-shape-v29.png      → Imagen de fondo de heroes y banners
+        └── (fotos del home)      → home-2020-c, nino-padre-…, inverti-tu-dinero2, finanzas-colaborativas-home
 supabase/
 │   └── migrations/               → (vacío)
 agents/                           → Subagentes del proyecto
@@ -176,13 +179,14 @@ docs/                             → PRD.md, CONTEXT.md y plan del simulador
 
 ### 7.1 CTAButton (`components/site/CTAButton.tsx`)
 
-Botón reutilizable con cinco variantes; las `-white` aceptan prop `accent` (`solicitante` | `inversor`) y replican las animaciones de los CTAs de las landings:
+Botón reutilizable con seis variantes; las `-white` aceptan prop `accent` (`solicitante` | `inversor`) y replican las animaciones de los CTAs de las landings:
 
 | Variante | Estilo | Hover |
 |---|---|---|
-| `solid` (default) | `bg-teal text-white` | `hover:bg-teal-dark` |
+| `solid` (default) | `bg-teal text-text` | `hover:bg-teal-dark` |
 | `outline` | `border-2 border-violet-dark text-violet-dark` | `hover:bg-violet-dark hover:text-white` |
 | `solid-inversor` | `bg-inversor text-white` | `hover:bg-inversor-dark` |
+| `solid-inversor-dark` | `bg-inversor-dark text-white` | `hover:bg-inversor` |
 | `solid-white` + accent | `bg-surface text-{accent}-dark` | `hover:bg-{accent}-light` |
 | `outline-white` + accent | `border-2 border-surface text-surface` | `hover:bg-surface hover:text-{accent}-dark` |
 
@@ -225,9 +229,13 @@ Botón reutilizable con cinco variantes; las `-white` aceptan prop `accent` (`so
 
 ### 7.7 Hero del home (`components/site/Hero.tsx`)
 
-- Sección con degradé teal→violet, título serif "Mejores préstamos, juntos"
-- Dos CTAs por audiencia: "Quiero pedir un préstamo" (`solid-white` accent solicitante → `/pedi-tu-prestamo`) y "Quiero invertir en Lendar" (`outline-white` accent inversor → `/inverti-en-lendar`)
-- El contenido adicional del home queda pendiente
+- Foto `home-2020-c.jpg` anclada a la izquierda; desde 1180 px va de fondo con el texto a la derecha, debajo de ese ancho se apila
+- H1 "Préstamos hipotecarios entre personas", bajada y dos CTAs: "Quiero un préstamo" (`solid` → `/pedi-tu-prestamo`) y "Quiero invertir" (`solid-inversor-dark` → `/inverti-en-lendar`)
+
+### 7.7.1 SeccionAudiencia y FinanzasColaborativas (home)
+
+- `SeccionAudiencia`: prop `accent` más mapa de contenido interno. Imagen cuadrada (`rounded-2xl`), título, bajada, 3 datos y CTA a la landing. Inversor invierte el orden y usa fondo `inversor-light`. Monto mínimo, plazos y TNA salen de `lib/calculos.ts`
+- `FinanzasColaborativas`: texto, imagen y grilla de 6 servicios (íconos lucide). Sin CTA
 
 ### 7.8 Heroes de landing (`HeroSolicitante.tsx` / `HeroInversor.tsx`)
 
@@ -340,7 +348,7 @@ Funciones: `formatUSD` (Intl es-AR, USD sin decimales), `calcularCuotaFrancesa` 
 
 | Ruta | Descripción |
 |---|---|
-| `/` | Home con hero y CTAs por audiencia (contenido adicional pendiente) |
+| `/` | Home: Hero → Préstamos → Inversiones → Finanzas colaborativas |
 | `/contacto` | Página de contacto con formulario y lugares de firma |
 | `/pedi-tu-prestamo` | Landing del solicitante: Hero → MarcoLegal → Requisitos → Proceso → Beneficios → Simulador → Banner |
 | `/inverti-en-lendar` | Landing del inversor: Hero → MarcoLegal → Proceso → Simulador → Banner |
@@ -436,6 +444,18 @@ Funciones: `formatUSD` (Intl es-AR, USD sin decimales), `calcularCuotaFrancesa` 
 
 [2026-08-24] DECISIÓN: Comisión Lendar informada con IVA incluido (5% base × 1,21) — resuelve parte del pendiente de tratamiento de comisión
           RAZÓN: Verificado contra referencia del cliente (127k → 7.684); card de resultado actualizado para mostrar la misma cifra.
+
+[2026-11-03] DECISIÓN: Home corto de 4 secciones con textos de lendar.com.ar, sin eyebrows, chips ni logo RE/MAX
+          RAZÓN: Debe llevar rápido a las landings de préstamos e inversiones. Layout inspirado en una plantilla de referencia, conservando colores y tipografías de Lendar.
+
+[2026-11-03] DECISIÓN: Texto oscuro en CTAButton `solid` (teal)
+          RAZÓN: El blanco sobre teal tiene contraste insuficiente (aprox. 2:1). Aplica a todo el sitio.
+
+[2026-11-03] DECISIÓN: Fondo y color de texto explícitos en body (`bg-surface text-text`)
+          RAZÓN: Sin fondo definido, la página podía verse negra en navegadores con preferencia oscura.
+
+[2026-11-03] PENDIENTE: Confirmar con Lendar tope financiable (Beneficios dice 50%, simulador 35%), fee incluido en la cuota, IVA y escalón Gold del fee de inversor, y la frase "doble rentabilidad"
+          RAZÓN: El sitio oficial y el código difieren; no inventar reglas de negocio.
 ```
 
 ## 10. CONVENCIONES DE CÓDIGO

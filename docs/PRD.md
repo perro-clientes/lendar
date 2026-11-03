@@ -1,7 +1,7 @@
 # Lendar — Product Requirements Document
 
-> **Versión: 0.5 — 2026-08-24**
-> Estado: Landings de audiencia completas — home con hero, landing de préstamos (marco legal, requisitos, proceso, beneficios, simulador con costos y honorarios, banner) y landing de inversiones.
+> **Versión: 0.6 — 2026-11-03**
+> Estado: Home y landings de audiencia completas — home de 4 secciones, landing de préstamos (marco legal, requisitos, proceso, beneficios, simulador con costos y honorarios, banner) y landing de inversiones.
 
 Cliente: Lendar (red RE/MAX Argentina)
 Proyecto: Plataforma de préstamos hipotecarios P2P
@@ -45,7 +45,7 @@ Proyecto: Plataforma de préstamos hipotecarios P2P
 | Navbar con logo, links de landings y CTA "Contacto" | [x] Implementado |
 | Footer con redes sociales y copyright | [x] Implementado |
 | CTAButton reutilizable (5 variantes + accent en variantes white) | [x] Implementado |
-| Home con hero y CTAs por audiencia | [x] Implementado |
+| Home de 4 secciones (hero, préstamos, inversiones, finanzas colaborativas) | [x] Implementado |
 | Página de contacto (`/contacto`) | [x] Implementada |
 | ContactoHero con imagen de fondo | [x] Implementado |
 | ContactoForm con validación cliente | [x] Implementado |
@@ -69,7 +69,6 @@ Proyecto: Plataforma de préstamos hipotecarios P2P
 
 | Feature | Estado |
 |---|---|
-| Contenido adicional del home (más allá del hero) | [ ] Pendiente |
 | Tracking por query params | [ ] Pendiente |
 | Endpoint de leads (`/api/leads`) | [ ] Pendiente |
 | Migración SQL de la tabla leads | [ ] Pendiente |
@@ -237,7 +236,7 @@ Estructura espejada: Hero → MarcoLegal → Proceso → Simulador → Banner.
 
 | Ruta | Descripción |
 |---|---|
-| `/` | Home con hero y CTAs por audiencia |
+| `/` | Home de 4 secciones con CTAs a cada landing |
 | `/contacto` | Página de contacto |
 | `/pedi-tu-prestamo` | Landing del solicitante (6 secciones + banner) |
 | `/inverti-en-lendar` | Landing del inversor |
@@ -325,7 +324,7 @@ Estructura espejada: Hero → MarcoLegal → Proceso → Simulador → Banner.
 - **Hecho:** Landing del solicitante (`/pedi-tu-prestamo`) y landing del inversor (`/inverti-en-lendar`)
 - **Hecho:** Simulador de préstamo (`/simulador-prestamos`) con bloque Costos y Honorarios
 - **Hecho:** Simulador de inversión (`/simulador-inversion`)
-- **Corto plazo:** Contenido adicional del home (más allá del hero)
+- **Hecho:** Home de 4 secciones
 - **Corto plazo:** Tracking por query params (evento/vendedor)
 - **Corto plazo:** Endpoint de leads y migración SQL
 - **Mediano plazo:** Panel mínimo de consulta de leads por evento/vendedor

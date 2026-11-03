@@ -3,7 +3,7 @@ import { type ButtonHTMLAttributes } from "react";
 type Accent = "solicitante" | "inversor";
 
 interface CTAButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "solid" | "outline" | "solid-inversor" | "solid-white" | "outline-white";
+  variant?: "solid" | "outline" | "solid-inversor" | "solid-inversor-dark" | "solid-white" | "outline-white";
   accent?: Accent;
 }
 
@@ -27,9 +27,10 @@ export function CTAButton({
   const base = "hover:cursor-pointer rounded-full px-8 h-11 text-sm font-semibold transition-colors";
 
   const variants = {
-    solid: "bg-teal text-white hover:bg-teal-dark",
+    solid: "bg-teal text-text hover:bg-teal-dark",
     outline: "border-2 border-violet-dark text-violet-dark hover:bg-violet-dark hover:text-white",
     "solid-inversor": "bg-inversor text-white hover:bg-inversor-dark",
+    "solid-inversor-dark": "bg-inversor-dark text-white hover:bg-inversor",
   };
 
   if (variant === "solid-white") {
