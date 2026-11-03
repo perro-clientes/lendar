@@ -9,9 +9,10 @@ import { Banner } from "@/components/site/Banner";
 import { LugaresFirma } from "@/components/site/LugaresFirma";
 
 export const metadata: Metadata = {
-  title: "Pedí tu préstamo",
+  title: "Préstamo hipotecario en dólares sin bancos",
   description:
     "Cuota fija en dólares, financiamiento de hasta el 35% del valor de la propiedad y preaprobación estimada en menos de 7 días hábiles.",
+  alternates: { canonical: "/pedi-tu-prestamo" },
 };
 
 export default function PediTuPrestamoPage() {

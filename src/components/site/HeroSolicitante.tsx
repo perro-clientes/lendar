@@ -13,7 +13,7 @@ export function HeroSolicitante() {
       <div aria-hidden className="absolute inset-0 bg-solicitante-dark/80" />
       <div className="relative mx-auto flex max-w-7xl flex-col items-start gap-8 px-4 py-24 md:py-36">
         <h1 className="max-w-3xl font-serif text-4xl font-semibold tracking-wide md:text-6xl">
-          Financiá tu próxima propiedad sin banco
+          Pedí tu préstamo hipotecario sin bancos
         </h1>
 
         <p className="max-w-2xl text-lg leading-relaxed text-white/90 md:text-xl">

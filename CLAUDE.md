@@ -42,6 +42,7 @@ Next.js 16 (App Router), React 19, TypeScript strict, Tailwind CSS v4 (theme ví
 - `src/lib/calculos.ts`: funciones financieras puras y constantes de negocio.
 - `src/lib/supabase.ts`: cliente server con service role.
 - `src/lib/contacto.ts`: datos de contacto oficiales de Lendar Litoral; usarlos desde ahí.
+- `src/lib/sitio.ts`: URL base del sitio. Toda página indexable define `alternates.canonical` y se suma a `src/app/sitemap.ts`; los simuladores independientes llevan `noindex`.
 - `src/lib/legales.ts`: lee los textos legales vigentes de lendar.com.ar; no copiarlos al repo.
 - `src/types/simulador.ts`: tipos compartidos.
 

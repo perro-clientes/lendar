@@ -9,9 +9,10 @@ import { SiNoPaga } from "@/components/site/SiNoPaga";
 import { SimuladorInversion } from "@/components/simuladores/SimuladorInversion";
 
 export const metadata: Metadata = {
-  title: "Invertí en Lendar",
+  title: "Invertí en dólares con garantía hipotecaria",
   description:
-    "Cobrá una renta mensual fija en dólares, respaldada por hipoteca de primer grado sobre la propiedad.",
+    "Cobrá una renta mensual fija en dólares, respaldada por hipoteca de primer grado sobre la propiedad. Lendar en Santa Fe y Entre Ríos.",
+  alternates: { canonical: "/inverti-en-lendar" },
 };
 
 export default function InvertiEnLendarPage() {

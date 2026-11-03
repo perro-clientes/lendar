@@ -251,8 +251,8 @@ Estructura: Hero → MarcoLegal → Proceso → Simulador → Respaldo → Si no
 | `/contacto` | Página de contacto |
 | `/pedi-tu-prestamo` | Landing del solicitante (6 secciones + banner) |
 | `/inverti-en-lendar` | Landing del inversor |
-| `/simulador-prestamos` | Simulador de préstamo standalone (con contacto) |
-| `/simulador-inversion` | Simulador de inversión standalone (acceso por link/QR) |
+| `/simulador-prestamos` | Simulador de préstamo standalone (con contacto; noindex) |
+| `/simulador-inversion` | Simulador de inversión standalone (acceso por link/QR; noindex) |
 | `/terminos-y-condiciones` | Términos y condiciones |
 | `/politica-de-privacidad` | Política de privacidad |
 

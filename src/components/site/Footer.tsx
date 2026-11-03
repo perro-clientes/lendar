@@ -76,7 +76,7 @@ export function Footer() {
 
             {COLUMNAS.map(({ titulo, links }) => (
               <nav key={titulo} aria-label={titulo} className="flex flex-col gap-4">
-                <h2 className="text-sm font-bold tracking-widest text-teal uppercase">{titulo}</h2>
+                <p className="text-sm font-bold tracking-widest text-teal uppercase">{titulo}</p>
                 <ul className="flex flex-col gap-3">
                   {links.map((link) => (
                     <li key={link.label}>

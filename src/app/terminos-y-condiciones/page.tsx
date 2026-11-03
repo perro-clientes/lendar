@@ -4,7 +4,9 @@ import { URL_TERMINOS, obtenerDocumentoLegal } from "@/lib/legales";
 
 export const metadata: Metadata = {
   title: "Términos y condiciones",
-  description: "Términos y condiciones generales de uso de Lendar.",
+  description:
+    "Términos y condiciones generales de uso de Lendar: servicios, privacidad, registro, responsabilidades y demás condiciones vigentes.",
+  alternates: { canonical: "/terminos-y-condiciones" },
 };
 
 export default async function TerminosPage() {

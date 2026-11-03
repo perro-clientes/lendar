@@ -4,8 +4,10 @@ import { ContactoForm } from "@/components/site/ContactoForm";
 import { LugaresFirma } from "@/components/site/LugaresFirma";
 
 export const metadata: Metadata = {
-  title: "Contacto",
-  description: "Contactanos para consultas sobre préstamos hipotecarios o inversiones P2P en Lendar.",
+  title: "Contacto en Santa Fe y Entre Ríos",
+  description:
+    "Consultanos por préstamos hipotecarios o inversiones en dólares por WhatsApp o mail, y encontrá las escribanías donde se firma en Santa Fe y Entre Ríos.",
+  alternates: { canonical: "/contacto" },
 };
 
 export default function ContactoPage() {

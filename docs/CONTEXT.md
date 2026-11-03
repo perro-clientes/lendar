@@ -103,6 +103,7 @@ Lendar es una plataforma argentina de préstamos hipotecarios P2P, exclusiva par
 ## 5. VARIABLES DE ENTORNO
 
 ```
+NEXT_PUBLIC_SITE_URL              → público; dominio de producción para URLs de metadatos (imagen OG)
 NEXT_PUBLIC_SUPABASE_URL          → público
 NEXT_PUBLIC_SUPABASE_ANON_KEY     → público (reservado para uso futuro en cliente)
 SUPABASE_SERVICE_ROLE_KEY         → server-only ⚠️
@@ -169,6 +170,7 @@ src/
 │   ├── supabase.ts               → Cliente server (service role)
 │   ├── legales.ts                → Lectura y parseo de los textos legales de lendar.com.ar
 │   ├── contacto.ts               → WhatsApp, mail e Instagram de Lendar Litoral
+│   ├── sitio.ts                  → URL base del sitio para metadatos, robots y sitemap
 │   └── calculos.ts               → Funciones financieras puras + constantes de negocio
 ├── types/
 │   ├── simulador.ts              → Tipos compartidos del simulador
@@ -493,6 +495,12 @@ Funciones: `formatUSD` (Intl es-AR, USD sin decimales), `calcularCuotaFrancesa` 
 
 [2026-11-03] DECISIÓN: lendarlitoral.ar/inversores es la referencia de la landing de inversiones; se suman respaldo, mora y Lugares de firma sin cambiar el orden del simulador
           RAZÓN: Mismo criterio que en préstamos. Monto máximo USD 300.000, comisión de 1% desde USD 40.000 y copy de transferencias tomados de la oficial; simulador verificado en cuatro escenarios.
+
+[2026-11-03] DECISIÓN: Imagen Open Graph única en el layout raíz (public/og/og-website.jpg), con tarjeta grande para Twitter/X
+          RAZÓN: Todas las páginas la heredan. Se resuelve con NEXT_PUBLIC_SITE_URL, que debe apuntar al dominio de producción.
+
+[2026-11-03] DECISIÓN: SEO base: robots.ts, sitemap.ts, canónicas por página, not-found propio y simuladores independientes con noindex
+          RAZÓN: Las rutas de QR repiten el simulador de las landings, así que se indexan solo las landings. Las URLs absolutas salen de lib/sitio.ts.
 
 [2026-11-03] PENDIENTE: Lendar confirma el paso a paso del inversor (no está en la página oficial, incluye 24–48 hs) y si la comisión lleva IVA (lendar.com.ar dice "+ IVA"; lendarlitoral.ar no)
           RAZÓN: Las fuentes difieren o no hay respaldo; no inventar reglas de negocio.

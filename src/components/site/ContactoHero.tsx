@@ -40,7 +40,7 @@ export function ContactoHero() {
         <div className="flex flex-col gap-6">
           {CANALES.map(({ titulo, bajada, valor, href }) => (
             <div key={titulo} className="flex flex-col gap-1">
-              <h2 className="text-lg font-bold">{titulo}</h2>
+              <p className="text-lg font-bold">{titulo}</p>
               <p className="text-white/80">{bajada}</p>
               <a
                 href={href}

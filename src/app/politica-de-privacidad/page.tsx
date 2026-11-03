@@ -4,7 +4,9 @@ import { URL_PRIVACIDAD, obtenerDocumentoLegal } from "@/lib/legales";
 
 export const metadata: Metadata = {
   title: "Política de privacidad",
-  description: "Cómo trata Lendar la información de sus usuarios.",
+  description:
+    "Cómo recolecta, usa, almacena y protege Lendar la información personal de sus usuarios, y cómo hacer consultas sobre tus datos.",
+  alternates: { canonical: "/politica-de-privacidad" },
 };
 
 export default async function PrivacidadPage() {
