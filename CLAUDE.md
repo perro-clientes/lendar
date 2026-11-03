@@ -31,16 +31,17 @@ No hay tests ni test runner. Para verificar un cambio: typecheck, lint y, si afe
 
 ## Stack
 
-Next.js 16 (App Router), React 19, TypeScript strict, Tailwind CSS v4 (theme vía `@theme` en `src/app/globals.css`), Supabase (solo Postgres, sin Auth), Vercel. Iconos: `lucide-react` en general; `react-icons/fa` solo para marcas y redes sociales.
+Next.js 16 (App Router), React 19, TypeScript strict, Tailwind CSS v4 (theme vía `@theme` en `src/app/globals.css`), Supabase (solo Postgres, sin Auth), Vercel. Iconos: `lucide-react`.
 
 ## Estructura
 
-- `src/app/`: rutas `/`, `/contacto`, `/pedi-tu-prestamo`, `/inverti-en-lendar`, `/simulador-prestamos`, `/simulador-inversion`. Esta última es destino de QR y no se enlaza desde Navbar ni Footer.
+- `src/app/`: rutas `/`, `/contacto`, `/pedi-tu-prestamo`, `/inverti-en-lendar`, `/simulador-prestamos`, `/simulador-inversion`, `/terminos-y-condiciones`, `/politica-de-privacidad`. `/simulador-inversion` es destino de QR y no se enlaza desde Navbar ni Footer.
 - `src/components/site/`: componentes propios del sitio.
 - `src/components/simuladores/`: simuladores, tablas de cuotas y formulario post-simulador.
 - `src/components/ui/`: primitivos genéricos con tokens neutros.
 - `src/lib/calculos.ts`: funciones financieras puras y constantes de negocio.
 - `src/lib/supabase.ts`: cliente server con service role.
+- `src/lib/legales.ts`: lee los textos legales vigentes de lendar.com.ar; no copiarlos al repo.
 - `src/types/simulador.ts`: tipos compartidos.
 
 ## Convenciones de código
@@ -100,4 +101,4 @@ Ante una contradicción, el código y `docs/CONTEXT.md` mandan sobre estos archi
 
 - `README.md` está desactualizado: menciona Zod (no instalado), `src/lib/env.ts` (no existe) y las rutas `/simular-prestamo` y `/simular-inversion`.
 - Los encabezados de `agents/*.md` todavía dicen que el proyecto está reseteado.
-- Incumplen las convenciones: `SimuladorInversion.tsx` (185 líneas), `Proceso.tsx` (157 líneas) y un color hex en `Footer.tsx`. No los corrijas de paso; proponelo como cambio aparte.
+- Incumplen las convenciones: `SimuladorInversion.tsx` (185 líneas), `Proceso.tsx` (157 líneas). No los corrijas de paso; proponelo como cambio aparte.

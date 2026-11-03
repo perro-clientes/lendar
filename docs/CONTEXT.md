@@ -40,7 +40,7 @@ Lendar es una plataforma argentina de préstamos hipotecarios P2P, exclusiva par
 | React | 19.2 | UI |
 | Tailwind CSS | v4 | Utilities; theme vía `@theme` en `globals.css` |
 | @supabase/supabase-js | latest | Cliente server (service role) |
-| react-icons | ^5.7 | Iconos de redes sociales (Font Awesome) |
+| react-icons | ^5.7 | Sin uso desde el rediseño del footer |
 | lucide-react | ^1.33 | Iconos outline (checks, proceso, beneficios, costos, menú) |
 | Supabase | latest | Solo Postgres; sin Auth en esta etapa |
 | Vercel | — | Deploy; preview por PR |
@@ -87,6 +87,7 @@ Lendar es una plataforma argentina de préstamos hipotecarios P2P, exclusiva par
 | `background` | #f4f5f7 | Fondos suaves de secciones y cards |
 | `surface` | #ffffff | Fondo de página (`body`), superficies, cards |
 | `foto-fondo` | #ededed | Fondo del hero del home; coincide con el degradé de su foto |
+| `footer` | #231f20 | Fondo del footer |
 | `border` | #e4e6ea | Bordes |
 | `text` | #1a1d23 | Texto primario |
 | `text-secondary` | #374151 | Texto secundario |
@@ -127,11 +128,12 @@ src/
 │   │   ├── Navbar.tsx            → Navegación superior sticky
 │   │   ├── NavLinks.tsx          → Links Préstamos/Inversiones con estado activo (Client)
 │   │   ├── MobileMenu.tsx        → Menú hamburguesa mobile (Client)
-│   │   ├── Footer.tsx            → Pie de página con redes sociales
+│   │   ├── Footer.tsx            → Pie de página oscuro con enlaces, logo RE/MAX y disclaimer
 │   │   ├── CTAButton.tsx         → Botón CTA (6 variantes + prop accent para variantes white)
 │   │   ├── Hero.tsx              → Hero del home (foto, H1 y CTAs por audiencia)
 │   │   ├── SeccionAudiencia.tsx  → Sección dividida imagen/texto del home (prop accent)
 │   │   ├── FinanzasColaborativas.tsx → Sección del home con explicación y 6 servicios
+│   │   ├── PaginaLegal.tsx       → Plantilla de páginas legales (índice, contenido y aviso de error)
 │   │   ├── HeroSolicitante.tsx   → Hero landing préstamos (fondo teal + imagen, CTAs a #simulador/#marco-legal)
 │   │   ├── HeroInversor.tsx      → Hero landing inversiones (fondo violet + imagen, CTAs ancla)
 │   │   ├── MarcoLegal.tsx        → Sección marco legal (prop accent; copy por audiencia; id="marco-legal")
@@ -157,9 +159,11 @@ src/
 │       └── Slider.tsx            → Extensible vía props accent/className
 ├── lib/
 │   ├── supabase.ts               → Cliente server (service role)
+│   ├── legales.ts                → Lectura y parseo de los textos legales de lendar.com.ar
 │   └── calculos.ts               → Funciones financieras puras + constantes de negocio
 ├── types/
-│   └── simulador.ts              → Tipos compartidos del simulador
+│   ├── simulador.ts              → Tipos compartidos del simulador
+│   └── legales.ts                → Tipos de los bloques legales
 └── public/
     ├── brand/                    → Logos y favicon
     │   ├── isologo-lendar.svg
@@ -200,9 +204,10 @@ Botón reutilizable con seis variantes; las `-white` aceptan prop `accent` (`sol
 
 ### 7.3 Footer (`components/site/Footer.tsx`)
 
-- Logo + disclaimer legal
-- Redes sociales: LinkedIn, Instagram (react-icons/fa)
-- Copyright 2026 Lendar ® + crédito PERRO Agency
+- Fondo oscuro (token `footer`): isologo en blanco con filtro y bajada
+- Columnas de texto: Navegá, Seguinos y Legal; los enlaces legales van a las rutas propias
+- Logo RE/MAX Proveedor Exclusivo sobre card blanca
+- Disclaimer de adaptación informativa, copyright y crédito PERRO Agency
 
 ### 7.4 ContactoHero (`components/site/ContactoHero.tsx`)
 
@@ -229,7 +234,7 @@ Botón reutilizable con seis variantes; las `-white` aceptan prop `accent` (`sol
 
 ### 7.7 Hero del home (`components/site/Hero.tsx`)
 
-- Foto `home-2020-c.jpg` anclada a la izquierda; desde 1180 px va de fondo con el texto a la derecha, debajo de ese ancho se apila
+- Foto `home-2020-c.jpg` anclada a la izquierda; desde 1180 px el texto va a la derecha; debajo de ese ancho la foto va atenuada (30%) detrás del texto
 - H1 "Préstamos hipotecarios entre personas", bajada y dos CTAs: "Quiero un préstamo" (`solid` → `/pedi-tu-prestamo`) y "Quiero invertir" (`solid-inversor-dark` → `/inverti-en-lendar`)
 
 ### 7.7.1 SeccionAudiencia y FinanzasColaborativas (home)
@@ -354,6 +359,8 @@ Funciones: `formatUSD` (Intl es-AR, USD sin decimales), `calcularCuotaFrancesa` 
 | `/inverti-en-lendar` | Landing del inversor: Hero → MarcoLegal → Proceso → Simulador → Banner |
 | `/simulador-prestamos` | Simulador de préstamo standalone (con contacto incluido) |
 | `/simulador-inversion` | Simulador de inversión standalone (destino de QR; sin links en Navbar) |
+| `/terminos-y-condiciones` | Términos y condiciones, con el texto vigente de lendar.com.ar |
+| `/politica-de-privacidad` | Política de privacidad, con el texto vigente de lendar.com.ar |
 
 ## 9. DECISIONES TÉCNICAS Y DE PRODUCTO
 
@@ -453,6 +460,12 @@ Funciones: `formatUSD` (Intl es-AR, USD sin decimales), `calcularCuotaFrancesa` 
 
 [2026-11-03] DECISIÓN: Fondo y color de texto explícitos en body (`bg-surface text-text`)
           RAZÓN: Sin fondo definido, la página podía verse negra en navegadores con preferencia oscura.
+
+[2026-11-03] DECISIÓN: Footer oscuro con columnas de enlaces, logo RE/MAX y disclaimer de adaptación informativa
+          RAZÓN: Pedido según referencia visual. Se conserva copyright y crédito de la agencia, que la referencia no muestra.
+
+[2026-11-03] DECISIÓN: Páginas legales leen el texto de lendar.com.ar en el servidor (revalidación diaria) y lo convierten a datos
+          RAZÓN: Evita dos versiones de un texto legal. No se usa dangerouslySetInnerHTML: solo pasan párrafos, listas, títulos, negrita y enlaces http(s). Si la lectura falla, se muestra un enlace al sitio oficial.
 
 [2026-11-03] PENDIENTE: Confirmar con Lendar tope financiable (Beneficios dice 50%, simulador 35%), fee incluido en la cuota, IVA y escalón Gold del fee de inversor, y la frase "doble rentabilidad"
           RAZÓN: El sitio oficial y el código difieren; no inventar reglas de negocio.

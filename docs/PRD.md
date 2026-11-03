@@ -242,6 +242,8 @@ Estructura espejada: Hero → MarcoLegal → Proceso → Simulador → Banner.
 | `/inverti-en-lendar` | Landing del inversor |
 | `/simulador-prestamos` | Simulador de préstamo standalone (con contacto) |
 | `/simulador-inversion` | Simulador de inversión standalone (acceso por link/QR) |
+| `/terminos-y-condiciones` | Términos y condiciones |
+| `/politica-de-privacidad` | Política de privacidad |
 
 ### 7.4 Seguridad y acceso
 
