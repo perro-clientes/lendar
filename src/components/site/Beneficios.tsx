@@ -17,7 +17,7 @@ const BENEFICIOS: Beneficio[] = [
     acento: "teal",
     titulo: "Comprá Hoy",
     descripcion:
-      "Avanzá en la compra sin necesitar el 100% del valor en efectivo. Financiás hasta el 50% del inmueble.",
+      "Avanzá en la compra sin necesitar el 100% del valor en efectivo. Financiás hasta el 35% del valor de la propiedad.",
   },
   {
     icono: Shield,

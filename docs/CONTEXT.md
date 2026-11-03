@@ -1,7 +1,7 @@
 # CONTEXT — Lendar
 
-> **Estado: Landings de audiencia completas (2026-08-24)**
-> Design system, sitio (Navbar/Footer/contacto/home), landing de préstamos completa (marco legal, requisitos, proceso, beneficios, simulador + costos y honorarios, banner) y landing de inversiones.
+> **Estado: Home y landings de audiencia completas (2026-11-03)**
+> Design system, sitio (Navbar/Footer/contacto), home de 4 secciones, landing de préstamos completa (marco legal, requisitos, proceso, beneficios, simulador + costos y honorarios, banner) y landing de inversiones.
 
 ## 1. DESCRIPCIÓN DEL PRODUCTO
 
@@ -21,12 +21,11 @@ Lendar es una plataforma argentina de préstamos hipotecarios P2P, exclusiva par
 [x] Design system: paleta de colores (teal/violet) y tipografía (Plus Jakarta Sans + Roboto Serif)
 [x] Componentes base: Navbar (con links + mobile menu), Footer, CTAButton (5 variantes + prop accent)
 [x] Página de contacto (/contacto) con formulario y sección "Lugares de firma"
-[x] Home con hero y CTAs por audiencia
+[x] Home: Hero → Préstamos → Inversiones → Finanzas colaborativas
 [x] Simulador de préstamo: UI, cálculo puro, bloque Costos y Honorarios, contacto post-simulador
 [x] Simulador de inversión: UI, cálculo puro y contacto post-simulador
 [x] Landing /pedi-tu-prestamo completa: Hero → MarcoLegal → Requisitos → Proceso → Beneficios → Simulador → Banner
-[x] Landing /inverti-en-lendar completa: Hero → MarcoLegal → Proceso → Simulador → Banner
-[ ] Contenido adicional del home (más allá del hero)
+[x] Landing /inverti-en-lendar completa: Hero → MarcoLegal → Proceso → Simulador → Respaldo → Si no paga → Lugares de firma → Banner
 [ ] Endpoint de leads
 [ ] Migración SQL
 [ ] Google Analytics
@@ -41,7 +40,7 @@ Lendar es una plataforma argentina de préstamos hipotecarios P2P, exclusiva par
 | React | 19.2 | UI |
 | Tailwind CSS | v4 | Utilities; theme vía `@theme` en `globals.css` |
 | @supabase/supabase-js | latest | Cliente server (service role) |
-| react-icons | ^5.7 | Iconos de redes sociales (Font Awesome) |
+| react-icons | ^5.7 | Sin uso desde el rediseño del footer |
 | lucide-react | ^1.33 | Iconos outline (checks, proceso, beneficios, costos, menú) |
 | Supabase | latest | Solo Postgres; sin Auth en esta etapa |
 | Vercel | — | Deploy; preview por PR |
@@ -55,7 +54,7 @@ Lendar es una plataforma argentina de préstamos hipotecarios P2P, exclusiva par
 | Token | Fuente | Props |
 |---|---|---|
 | `--font-sans` | Plus Jakarta Sans | Pesos 200-800, variable |
-| `--font-serif` | Roboto Serif | Variable (4 ejes: weight, width, opsz, grade) |
+| `--font-serif` | Roboto Serif | Variable; estilos normal e itálica |
 
 ### 4.2 Colores de marca
 
@@ -85,8 +84,10 @@ Lendar es una plataforma argentina de préstamos hipotecarios P2P, exclusiva par
 
 | Token | Valor | Uso |
 |---|---|---|
-| `background` | #f4f5f7 | Fondo de página |
-| `surface` | #ffffff | Superficies, cards |
+| `background` | #f4f5f7 | Fondos suaves de secciones y cards |
+| `surface` | #ffffff | Fondo de página (`body`), superficies, cards |
+| `foto-fondo` | #ededed | Fondo del hero del home; coincide con el degradé de su foto |
+| `footer` | #231f20 | Fondo del footer |
 | `border` | #e4e6ea | Bordes |
 | `text` | #1a1d23 | Texto primario |
 | `text-secondary` | #374151 | Texto secundario |
@@ -95,13 +96,14 @@ Lendar es una plataforma argentina de préstamos hipotecarios P2P, exclusiva par
 
 ### 4.5 Criterios transversales
 
-- **Títulos de sección**: siempre `font-serif` (Roboto Serif), bold, escala `text-3xl md:text-5xl` — criterio confirmado por diseño aunque alguna referencia pida sans.
+- **Títulos de sección**: siempre `font-serif` (Roboto Serif), escala `text-3xl md:text-5xl` — criterio confirmado por diseño aunque alguna referencia pida sans. En el home: peso medio con una frase final en itálica (`<em>` peso normal), sin eyebrow. Las landings mantienen bold hasta que se migren.
 - **Acentos como neutros de diferenciación**: dentro de la landing de préstamos, teal/violeta se usan alternados para distinguir categorías (card del inmueble en Requisitos, cards de Beneficios, header de Costos y Honorarios) **sin** referencia a la audiencia Inversor — patrón confirmado con el cliente.
 - **CTA de landings sobre fondos de color**: primario = relleno blanco + texto `{accent}-dark`, hover `{accent}-light`; secundario outline = borde blanco + hover con relleno blanco y texto `{accent}-dark`. Las variantes `-white` de CTAButton replican exactamente estas animaciones.
 
 ## 5. VARIABLES DE ENTORNO
 
 ```
+NEXT_PUBLIC_SITE_URL              → público; dominio de producción para URLs de metadatos (imagen OG)
 NEXT_PUBLIC_SUPABASE_URL          → público
 NEXT_PUBLIC_SUPABASE_ANON_KEY     → público (reservado para uso futuro en cliente)
 SUPABASE_SERVICE_ROLE_KEY         → server-only ⚠️
@@ -114,7 +116,7 @@ src/
 ├── app/
 │   ├── globals.css               → Theme de Tailwind (colores, fuentes)
 │   ├── layout.tsx                → Layout global (Navbar + main + Footer)
-│   ├── page.tsx                  → Landing principal (placeholder)
+│   ├── page.tsx                  → Home (Hero, SeccionAudiencia ×2, FinanzasColaborativas)
 │   ├── contacto/
 │   │   └── page.tsx              → Página de contacto
 │   ├── simulador-prestamos/
@@ -127,14 +129,20 @@ src/
 │   │   ├── Navbar.tsx            → Navegación superior sticky
 │   │   ├── NavLinks.tsx          → Links Préstamos/Inversiones con estado activo (Client)
 │   │   ├── MobileMenu.tsx        → Menú hamburguesa mobile (Client)
-│   │   ├── Footer.tsx            → Pie de página con redes sociales
-│   │   ├── CTAButton.tsx         → Botón CTA (5 variantes + prop accent para variantes white)
-│   │   ├── Hero.tsx              → Hero del home (degradé teal→violet, CTAs por audiencia)
+│   │   ├── Footer.tsx            → Pie de página oscuro con enlaces, logo RE/MAX y disclaimer
+│   │   ├── CTAButton.tsx         → Botón CTA (6 variantes + prop accent para variantes white)
+│   │   ├── Hero.tsx              → Hero del home (foto, H1 y CTAs por audiencia)
+│   │   ├── SeccionAudiencia.tsx  → Sección dividida imagen/texto del home (prop accent)
+│   │   ├── FinanzasColaborativas.tsx → Sección del home con explicación y 6 servicios
+│   │   ├── PaginaLegal.tsx       → Plantilla de páginas legales (índice, contenido y aviso de error)
 │   │   ├── HeroSolicitante.tsx   → Hero landing préstamos (fondo teal + imagen, CTAs a #simulador/#marco-legal)
 │   │   ├── HeroInversor.tsx      → Hero landing inversiones (fondo violet + imagen, CTAs ancla)
 │   │   ├── MarcoLegal.tsx        → Sección marco legal (prop accent; copy por audiencia; id="marco-legal")
 │   │   ├── Requisitos.tsx        → Sección requisitos (2 cards: solicitante/inmueble) — solo landing préstamos
-│   │   ├── Proceso.tsx           → Sección proceso sticky-scroll (prop accent; copy por audiencia)
+│   │   ├── Proceso.tsx           → Sección paso a paso (prop accent; copy por audiencia)
+│   │   ├── LineaDeTiempo.tsx     → Lista de pasos numerados compartida
+│   │   ├── RespaldoInversion.tsx → Sección de respaldo 35/65 — solo landing inversiones
+│   │   ├── SiNoPaga.tsx          → Qué pasa ante la mora — solo landing inversiones
 │   │   ├── Beneficios.tsx        → Sección beneficios (4 cards, íconos lucide) — solo landing préstamos
 │   │   ├── Banner.tsx            → Banner CTA final de landings (prop accent)
 │   │   ├── ContactoHero.tsx      → Columna izquierda de contacto
@@ -143,9 +151,14 @@ src/
 │   ├── simuladores/              → Componentes de los simuladores
 │   │   ├── SimuladorPrestamo.tsx → UI principal préstamo (Client; prop mostrarContacto)
 │   │   ├── SimuladorInversion.tsx → UI principal inversión (Client; prop mostrarContacto)
+│   │   ├── ResultadoPrestamo.tsx → Cuota, barra préstamo/aporte y datos del préstamo
+│   │   ├── SelectorPlazo.tsx     → Botones de plazo con TNA del simulador de préstamo
+│   │   ├── PrecancelacionPrestamo.tsx → Adelanto, cancelación total y calculadora de precancelación
 │   │   ├── CostosHonorarios.tsx  → Bloque costos del simulador de préstamo (comisión en vivo + escribanía)
 │   │   ├── TablaAmortizacion.tsx → Tabla mes a mes préstamo (siempre visible, scroll interno)
 │   │   ├── TablaAmortizacionInversion.tsx → Tabla mes a mes inversión (sin IVA)
+│   │   ├── ResultadoInversion.tsx → Cobro mensual, datos, CTA y costos de la inversión
+│   │   ├── SelectorFormato.tsx   → Botones de formato de entrega y cobro
 │   │   └── CTAContacto.tsx       → Formulario contacto compartido (accent solicitante/inversor)
 │   └── ui/                       → Primitivos genéricos (tokens neutros)
 │       ├── Button.tsx
@@ -155,17 +168,22 @@ src/
 │       └── Slider.tsx            → Extensible vía props accent/className
 ├── lib/
 │   ├── supabase.ts               → Cliente server (service role)
+│   ├── legales.ts                → Lectura y parseo de los textos legales de lendar.com.ar
+│   ├── contacto.ts               → WhatsApp, mail e Instagram de Lendar Litoral
+│   ├── sitio.ts                  → URL base del sitio para metadatos, robots y sitemap
 │   └── calculos.ts               → Funciones financieras puras + constantes de negocio
 ├── types/
-│   └── simulador.ts              → Tipos compartidos del simulador
+│   ├── simulador.ts              → Tipos compartidos del simulador
+│   └── legales.ts                → Tipos de los bloques legales
 └── public/
     ├── brand/                    → Logos y favicon
     │   ├── isologo-lendar.svg
     │   ├── isologo-lendar.png
     │   ├── lendar-favicon.svg
     │   └── lendar-favicon.png
-    └── miscellaneous/
-        └── bg-shape-v29.png      → Imagen de fondo para hero de contacto
+    └── miscelaneous/
+        ├── bg-shape-v29.png      → Imagen de fondo de heroes y banners
+        └── (fotos del home)      → home-2020-c, nino-padre-…, inverti-tu-dinero2, finanzas-colaborativas-home
 supabase/
 │   └── migrations/               → (vacío)
 agents/                           → Subagentes del proyecto
@@ -176,13 +194,14 @@ docs/                             → PRD.md, CONTEXT.md y plan del simulador
 
 ### 7.1 CTAButton (`components/site/CTAButton.tsx`)
 
-Botón reutilizable con cinco variantes; las `-white` aceptan prop `accent` (`solicitante` | `inversor`) y replican las animaciones de los CTAs de las landings:
+Botón reutilizable con seis variantes; las `-white` aceptan prop `accent` (`solicitante` | `inversor`) y replican las animaciones de los CTAs de las landings:
 
 | Variante | Estilo | Hover |
 |---|---|---|
-| `solid` (default) | `bg-teal text-white` | `hover:bg-teal-dark` |
+| `solid` (default) | `bg-teal text-text` | `hover:bg-teal-dark` |
 | `outline` | `border-2 border-violet-dark text-violet-dark` | `hover:bg-violet-dark hover:text-white` |
 | `solid-inversor` | `bg-inversor text-white` | `hover:bg-inversor-dark` |
+| `solid-inversor-dark` | `bg-inversor-dark text-white` | `hover:bg-inversor` |
 | `solid-white` + accent | `bg-surface text-{accent}-dark` | `hover:bg-{accent}-light` |
 | `outline-white` + accent | `border-2 border-surface text-surface` | `hover:bg-surface hover:text-{accent}-dark` |
 
@@ -196,16 +215,16 @@ Botón reutilizable con cinco variantes; las `-white` aceptan prop `accent` (`so
 
 ### 7.3 Footer (`components/site/Footer.tsx`)
 
-- Logo + disclaimer legal
-- Redes sociales: LinkedIn, Instagram (react-icons/fa)
-- Copyright 2026 Lendar ® + crédito PERRO Agency
+- Fondo oscuro (token `footer`): isologo en blanco con filtro y bajada
+- Columnas de texto: Navegá, Seguinos y Legal; los enlaces legales van a las rutas propias
+- Logo RE/MAX Proveedor Exclusivo sobre card blanca
+- Disclaimer de adaptación informativa, copyright y crédito PERRO Agency
 
 ### 7.4 ContactoHero (`components/site/ContactoHero.tsx`)
 
-- Columna izquierda de la página de contacto
-- Imagen de fondo (`bg-shape-v29.png`) con overlay `violet-dark/80`
+- Columna izquierda de la página de contacto, sobre fondo violeta con imagen
 - Título "Contactate" (font-serif)
-- Datos de contacto: Préstamos e Inversiones (whatsapp + email)
+- Canales únicos de Lendar Litoral: WhatsApp, mail e Instagram, tomados de `lib/contacto.ts`
 - Link scroll a "Lugares de firma Litoral"
 
 ### 7.5 ContactoForm (`components/site/ContactoForm.tsx`)
@@ -220,14 +239,18 @@ Botón reutilizable con cinco variantes; las `-white` aceptan prop `accent` (`so
 ### 7.6 LugaresFirma (`components/site/LugaresFirma.tsx`)
 
 - Grid responsive de cards (1 col → 2 md → 3 lg)
-- 5 escribanías del Litoral (data hardcodeada)
+- 5 escribanías del Litoral (data hardcodeada, alineada con lendarlitoral.ar); "Contactar" abre un email a cada escribanía
 - Cada card: zona, escribanía, dirección, oficinas RE/MAX, CTA outline "Contactar"
 
 ### 7.7 Hero del home (`components/site/Hero.tsx`)
 
-- Sección con degradé teal→violet, título serif "Mejores préstamos, juntos"
-- Dos CTAs por audiencia: "Quiero pedir un préstamo" (`solid-white` accent solicitante → `/pedi-tu-prestamo`) y "Quiero invertir en Lendar" (`outline-white` accent inversor → `/inverti-en-lendar`)
-- El contenido adicional del home queda pendiente
+- Foto `home-2020-c.jpg` anclada a la izquierda; desde 1180 px el texto va a la derecha; debajo de ese ancho la foto va atenuada (30%) detrás del texto
+- H1 "Préstamos hipotecarios entre personas", bajada y dos CTAs: "Quiero un préstamo" (`solid` → `/pedi-tu-prestamo`) y "Quiero invertir" (`solid-inversor-dark` → `/inverti-en-lendar`)
+
+### 7.7.1 SeccionAudiencia y FinanzasColaborativas (home)
+
+- `SeccionAudiencia`: prop `accent` más mapa de contenido interno. Imagen cuadrada (`rounded-2xl`), título, bajada, 3 datos y CTA a la landing. Inversor invierte el orden y usa fondo `inversor-light`. Monto mínimo, plazos y TNA salen de `lib/calculos.ts`
+- `FinanzasColaborativas`: texto, imagen y grilla de 6 servicios (íconos lucide). Sin CTA
 
 ### 7.8 Heroes de landing (`HeroSolicitante.tsx` / `HeroInversor.tsx`)
 
@@ -244,16 +267,14 @@ Botón reutilizable con cinco variantes; las `-white` aceptan prop `accent` (`so
 
 ### 7.10 Requisitos (`components/site/Requisitos.tsx`) — solo landing préstamos
 
-- Badge píldora teal; título serif "¿Qué necesito para pedir un Lendar?"
-- Grid `lg:grid-cols-2`: Card 1 "Información del solicitante" (tokens solicitante) y Card 2 "Información del inmueble" (tokens violeta como neutro de categorización)
-- Cada card: círculo numerado (`{accent}-dark`), degradé sutil, borde fino; listas con bullets simples (no checks)
+- Grid `lg:grid-cols-2`: "Información de quien solicita el dinero" (tokens solicitante) e "Información del inmueble a hipotecar" (violeta como neutro de categorización)
+- Listas alineadas con lendarlitoral.ar/solicitantes; ingresos con detalle según situación laboral
 
-### 7.11 Proceso (`components/site/Proceso.tsx`) — ex ProcesoInversor
+### 7.11 Proceso y LineaDeTiempo (`components/site/Proceso.tsx`, `LineaDeTiempo.tsx`)
 
-- Prop `accent`; copy por audiencia vía mapa interno (5 pasos con título/subtítulo/descripción cada uno)
-- Layout sticky-scroll: intro 35% sticky + pasos apilados 65% con z incremental (efecto de superposición al scrollear)
-- Badge teal para solicitante; badge neutro (`bg-border`) para inversor
-- Círculos numerados y subtítulos de paso en `{accent}-dark`
+- `Proceso`: prop `accent`; copy por audiencia vía mapa interno (5 pasos con título, etiqueta y descripción); `id="paso-a-paso"`
+- `LineaDeTiempo`: pasos numerados unidos por una línea, con detalle opcional. Lo comparten `Proceso` y `SiNoPaga`
+- En préstamos, la etiqueta muestra el plazo estimado de cada paso
 
 ### 7.12 Beneficios (`components/site/Beneficios.tsx`) — solo landing préstamos
 
@@ -269,15 +290,15 @@ Botón reutilizable con cinco variantes; las `-white` aceptan prop `accent` (`so
 
 ### 7.14 SimuladorPrestamo (`components/simuladores/SimuladorPrestamo.tsx`)
 
-- Client Component (~145 líneas); compone Card, Field y Slider con tokens `solicitante`
+- Client Component; compone Card, Slider, `SelectorPlazo` y `ResultadoPrestamo` con tokens `solicitante`
 - Prop `mostrarContacto` (default `true`): la ruta dedicada lo muestra con formulario; la landing lo oculta (usa Banner final)
-- Inputs:
-  - Valor real de propiedad a hipotecar: slider USD 30.000–500.000, step 5.000 (default 100.000)
-  - Monto solicitado: slider min USD 10.000, max dinámico = 35% del valor de la propiedad, step 1.000 (default 35.000); se clampea si baja la propiedad
-  - Plazo de devolución: 5 botones con TNA visible (9,5% / 10,5% / 11,5% / 12,5% / 13,5%; default 3 años)
-  - Checkbox "Vivienda única y permanente": sin efecto en el cálculo (TODO Lendar)
-- Card de resultado: cuota mensual estimada grande (capital + interés) + línea informativa de comisión inicial **con IVA** e IVA sobre intereses en tabla
-- Debajo de la tabla: bloque CostosHonorarios (ver 7.19)
+- Reglas y fórmula alineadas con lendarlitoral.ar/solicitantes:
+  - Valor de propiedad: USD 29.000–450.000, step 500 (default 75.000); no puede bajar del mínimo para el monto elegido
+  - Monto solicitado: USD 10.000–150.000, step 1.000 (default 25.000), con accesos rápidos; al moverlo, la propiedad pasa al valor mínimo (monto / 35%)
+  - Plazo: 5 botones con TNA visible (default 5 años)
+  - "Vivienda única y permanente" (default activo): sin IVA sobre intereses. Desactivado: la cuota se muestra como rango porque suma 21% de IVA sobre intereses
+- `ResultadoPrestamo`: cuota o rango, barra préstamo/aporte, plazo, tasa y capital financiado
+- Debajo de la tabla: CostosHonorarios (ver 7.19) y `PrecancelacionPrestamo`: penalidad de 5% + IVA sobre el capital pendiente, desde la cuota 2 hasta la anteúltima
 
 ### 7.15 TablaAmortizacion (`components/simuladores/TablaAmortizacion.tsx`)
 
@@ -297,15 +318,19 @@ Botón reutilizable con cinco variantes; las `-white` aceptan prop `accent` (`so
 
 ### 7.17 SimuladorInversion (`components/simuladores/SimuladorInversion.tsx`)
 
-- Client Component (~185 líneas); compone Card, Field y Slider con tokens `inversor`
+- Client Component; compone Card, Slider, `SelectorPlazo`, `SelectorFormato` y `ResultadoInversion` con tokens `inversor`
 - Componente reutilizable: vive en la landing `/inverti-en-lendar` (con `mostrarContacto={false}`) y en la ruta dedicada `/simulador-inversion`; nunca en el home
-- Inputs:
-  - Monto a invertir: slider USD 10.000–500.000, step 1.000 (default 10.000; máximo TODO confirmar con Lendar)
-  - Plazo de inversión: mismo selector de 5 botones que préstamo, con TNA visible
-  - Formato de entrega del capital: Efectivo ("Llevás el dinero en efectivo al momento de la firma.") / Transferencia (copy TODO confirmar)
-  - Formato de cobro de la cuota: Efectivo / Transferencia (copy efectivo validado; transferencia TODO confirmar)
-- Card de resultado: cobro mensual estimado grande + leyenda "Calculado mediante Sistema Francés directo en dólares billete."
-- Bloque Costos: Comisión Lendar ({COMISION_INVERSOR_PCT}% del monto invertido) — "Se paga por única vez, en efectivo, el día de la firma en la escribanía."
+- Reglas alineadas con lendarlitoral.ar/inversores:
+  - Monto a invertir: USD 10.000–300.000, step 1.000 (default 10.000), con accesos rápidos
+  - Plazo: mismo selector de 5 botones que préstamo (default 5 años)
+  - Formatos de entrega y cobro: Efectivo / Transferencia, con copy oficial
+- `ResultadoInversion`: cobro mensual, plazo, tasa, CTA "Quiero invertir: charlemos" a `/contacto` y costos
+- Comisión Lendar: 1,5% del monto invertido; 1% desde USD 40.000. Se paga por única vez, en efectivo, el día de la firma
+
+### 7.17.1 RespaldoInversion y SiNoPaga (landing inversiones)
+
+- `RespaldoInversion`: relación 35% préstamo / 65% margen de cobertura, derivada de `PORCENTAJE_MAXIMO_PROPIEDAD`
+- `SiNoPaga`: filtro previo, cuota atrasada, punitorio y ejecución. La tasa punitoria de ejemplo se calcula con `calcularTasaPunitoria`
 
 ### 7.18 TablaAmortizacionInversion (`components/simuladores/TablaAmortizacionInversion.tsx`)
 
@@ -318,7 +343,7 @@ Botón reutilizable con cinco variantes; las `-white` aceptan prop `accent` (`so
 - Header: ícono Calculator (lucide) + título h3 "Costos y honorarios" en violeta (neutro de diferenciación, según referencia)
 - Grid `[35fr_65fr]` desktop, apilado mobile, `items-stretch` para igualar alturas
 - Card 1 (violeta): degradé surface→violet-light, borde violet-lighter; título "Comisión Lendar"; línea principal "**5%** + IVA sobre {monto}" con números bold; nota itálica; box anidado blanco con "Comisión total con IVA" + monto calculado bold violet-dark
-- Card 2 (teal): mismo esquema con tokens teal; título "Costos de escribanía"; filas label/valor (compra con financiamiento 3,25%–5%; hipoteca sola 3%–6,5%, valores bold en text neutro); disclaimer itálico de orientatividad
+- Card 2 (teal): "Previsión de costos de escribanía"; compra con financiamiento Lendar con enlace a WhatsApp, sin porcentajes; disclaimer itálico de orientatividad
 - Ubicación: full-width debajo de la tabla de cuotas, encima del formulario de contacto
 
 ### 7.20 Lógica de cálculo (`lib/calculos.ts`)
@@ -327,25 +352,32 @@ Funciones puras sin dependencias de UI; única fuente de verdad financiera.
 
 | Constante | Valor | Nota |
 |---|---|---|
-| `COMISION_INICIAL_PCT` | 0.05 | Comisión Lendar del solicitante; se informa **con IVA incluido** (`calcularComisionInicial` devuelve base × 1,21) — confirmado con referencia |
-| `IVA_PCT` | 0.21 | TODO: confirmar concepto gravado con Lendar |
+| `COMISION_INICIAL_PCT` | 0.05 | Comisión Lendar del solicitante; con IVA (base × 1,21) se suma al capital y se financia dentro de la cuota |
+| `IVA_PCT` | 0.21 | Sobre intereses del préstamo, salvo vivienda única y permanente; también sobre la comisión |
 | `MONTO_MINIMO_USD` | 10000 | Mínimo de préstamo e inversión |
 | `PORCENTAJE_MAXIMO_PROPIEDAD` | 0.35 | Tope monto / valor propiedad |
-| `COMISION_INVERSOR_PCT` | 0.015 | Comisión Lendar del inversor; TODO: escalón Gold (>40k) |
+| `VALOR_PROPIEDAD_STEP` | 500 | Paso del slider de propiedad y redondeo del valor mínimo |
+| `PENALIDAD_CANCELACION_PCT` | 0.05 | Penalidad por cancelación total, más IVA, sobre el capital pendiente |
+| `COMISION_INVERSOR_PCT` | 0.015 | Comisión Lendar del inversor por debajo de USD 40.000 |
+| `COMISION_INVERSOR_GOLD_PCT` | 0.01 | Comisión Lendar del inversor desde `MONTO_INVERSOR_GOLD_USD` |
+| `MONTO_INVERSOR_GOLD_USD` | 40000 | Monto desde el que aplica la comisión reducida |
+| `RECARGO_PUNITORIO_PCT` | 0.5 | Suba del interés pactado durante la mora |
 | `PLAZOS` | [{anios, tna} × 5] | Única fuente de tasas por plazo (compartida préstamo/inversión) |
 
-Funciones: `formatUSD` (Intl es-AR, USD sin decimales), `calcularCuotaFrancesa` (helper privado compartido), `calcularCuotaPrestamo` y `calcularCobroInversion` (amortización francesa), `calcularAmortizacionPrestamo` (tabla con IVA) y `calcularAmortizacionInversion` (tabla sin IVA, cierre exacto en 0), `calcularMontoMaximo`, `calcularComisionInicial`, `calcularComisionInversor`. Tipos compartidos en `types/simulador.ts`.
+Funciones: `formatUSD` (Intl es-AR, USD sin decimales), `calcularCuotaFrancesa` (helper privado compartido), `calcularCuotaPrestamo` y `calcularCobroInversion` (amortización francesa), `calcularAmortizacionPrestamo` (tabla con IVA) y `calcularAmortizacionInversion` (tabla sin IVA, cierre exacto en 0), `calcularValorMinimoPropiedad`, `calcularComisionInicial`, `calcularCapitalFinanciado`, `calcularPrecancelacion`, `obtenerComisionInversorPct`, `calcularTasaPunitoria`, `formatPorcentaje`, `calcularComisionInversor`. Tipos compartidos en `types/simulador.ts`.
 
 ## 8. PÁGINAS EXISTENTES
 
 | Ruta | Descripción |
 |---|---|
-| `/` | Home con hero y CTAs por audiencia (contenido adicional pendiente) |
+| `/` | Home: Hero → Préstamos → Inversiones → Finanzas colaborativas |
 | `/contacto` | Página de contacto con formulario y lugares de firma |
-| `/pedi-tu-prestamo` | Landing del solicitante: Hero → MarcoLegal → Requisitos → Proceso → Beneficios → Simulador → Banner |
-| `/inverti-en-lendar` | Landing del inversor: Hero → MarcoLegal → Proceso → Simulador → Banner |
+| `/pedi-tu-prestamo` | Landing del solicitante: Hero → MarcoLegal → Requisitos → Proceso → Beneficios → Simulador (con costos y precancelación) → Lugares de firma → Banner |
+| `/inverti-en-lendar` | Landing del inversor: Hero → MarcoLegal → Proceso → Simulador → Respaldo → Si no paga → Lugares de firma → Banner |
 | `/simulador-prestamos` | Simulador de préstamo standalone (con contacto incluido) |
 | `/simulador-inversion` | Simulador de inversión standalone (destino de QR; sin links en Navbar) |
+| `/terminos-y-condiciones` | Términos y condiciones, con el texto vigente de lendar.com.ar |
+| `/politica-de-privacidad` | Política de privacidad, con el texto vigente de lendar.com.ar |
 
 ## 9. DECISIONES TÉCNICAS Y DE PRODUCTO
 
@@ -395,9 +427,6 @@ Funciones: `formatUSD` (Intl es-AR, USD sin decimales), `calcularCuotaFrancesa` 
 [2026-08] DECISIÓN: Rangos de sliders: propiedad 30k–500k step 5k; monto min 10k con max dinámico 35%
           RAZÓN: El mínimo de propiedad garantiza que el 35% ≥ mínimo del préstamo y elimina el edge case max < min.
 
-[2026-08] PENDIENTE: Efecto de "vivienda única y permanente" y concepto gravado por el IVA en la tabla de cuotas
-          RAZÓN: No inventar reglas de negocio; quedaron como TODO en código a confirmar con Lendar.
-
 [2026-08] DECISIÓN: Simulador de inversión como componente reutilizable con ruta dedicada (/simulador-inversion)
           RAZÓN: El mismo componente vivirá en la futura landing /inversores; la ruta dedicada es destino de QR del vendedor. Sin links en Navbar/Footer: acceso solo por link directo o QR.
 
@@ -416,9 +445,6 @@ Funciones: `formatUSD` (Intl es-AR, USD sin decimales), `calcularCuotaFrancesa` 
 [2026-08] DECISIÓN: Variante solid-inversor en CTAButton
           RAZÓN: El contexto inversor necesita un botón primario violeta manteniendo el patrón sólido.
 
-[2026-08] PENDIENTE: Máximo de inversión (hoy USD 500k por universo de simuladores), copy exacto de transferencias y escalón Inversor Gold (>40k)
-          RAZÓN: No inventar reglas de negocio; quedaron como TODO en código a confirmar con Lendar.
-
 [2026-08-24] DECISIÓN: Variantes solid-white/outline-white de CTAButton con prop accent, replicando las animaciones hover de los CTAs de landings
           RAZÓN: El home usaba hovers distintos (gris plano / overlay translúcido); un solo lenguaje de CTA en todo el sitio.
 
@@ -436,6 +462,57 @@ Funciones: `formatUSD` (Intl es-AR, USD sin decimales), `calcularCuotaFrancesa` 
 
 [2026-08-24] DECISIÓN: Comisión Lendar informada con IVA incluido (5% base × 1,21) — resuelve parte del pendiente de tratamiento de comisión
           RAZÓN: Verificado contra referencia del cliente (127k → 7.684); card de resultado actualizado para mostrar la misma cifra.
+
+[2026-11-03] DECISIÓN: Home corto de 4 secciones con textos de lendar.com.ar, sin eyebrows, chips ni logo RE/MAX
+          RAZÓN: Debe llevar rápido a las landings de préstamos e inversiones. Layout inspirado en una plantilla de referencia, conservando colores y tipografías de Lendar.
+
+[2026-11-03] DECISIÓN: Texto oscuro en CTAButton `solid` (teal)
+          RAZÓN: El blanco sobre teal tiene contraste insuficiente (aprox. 2:1). Aplica a todo el sitio.
+
+[2026-11-03] DECISIÓN: Fondo y color de texto explícitos en body (`bg-surface text-text`)
+          RAZÓN: Sin fondo definido, la página podía verse negra en navegadores con preferencia oscura.
+
+[2026-11-03] DECISIÓN: Footer oscuro con columnas de enlaces, logo RE/MAX y disclaimer de adaptación informativa
+          RAZÓN: Pedido según referencia visual. Se conserva copyright y crédito de la agencia, que la referencia no muestra.
+
+[2026-11-03] DECISIÓN: Páginas legales leen el texto de lendar.com.ar en el servidor (revalidación diaria) y lo convierten a datos
+          RAZÓN: Evita dos versiones de un texto legal. No se usa dangerouslySetInnerHTML: solo pasan párrafos, listas, títulos, negrita y enlaces http(s). Si la lectura falla, se muestra un enlace al sitio oficial.
+
+[2026-11-03] DECISIÓN: lendarlitoral.ar es la referencia oficial de la landing de préstamos; simulador, requisitos, plazos del proceso y costos se alinean con ella
+          RAZÓN: La comisión se financia dentro de la cuota, el IVA sobre intereses depende de vivienda única y permanente, y la escribanía se consulta por WhatsApp. Cuota y tablas verificadas contra la calculadora oficial en cuatro escenarios.
+
+[2026-11-03] DECISIÓN: Proceso pasa de sticky-scroll a línea de tiempo simple, en ambas landings
+          RAZÓN: Pedido del cliente; los plazos se leen de un vistazo y el componente sigue compartido.
+
+[2026-11-03] DECISIÓN: Sumar adelanto, precancelación y Lugares de firma a la landing de préstamos, sin cambiar el orden del simulador
+          RAZÓN: Información de la página oficial que faltaba. La precancelación vive dentro del simulador porque usa sus valores en vivo; datos de escribanías corregidos también para /contacto.
+
+[2026-11-03] DECISIÓN: Datos de contacto unificados con lendarlitoral.ar y centralizados en lib/contacto.ts
+          RAZÓN: La región usa un solo WhatsApp, un solo mail y un solo Instagram, sin canales separados por audiencia.
+
+[2026-11-03] DECISIÓN: "Solicitá tu préstamo" lleva a /contacto, no al registro de app.lendar.com.ar
+          RAZÓN: Definido por el cliente. El paso 1 del proceso ya no menciona registro.
+
+[2026-11-03] DECISIÓN: lendarlitoral.ar/inversores es la referencia de la landing de inversiones; se suman respaldo, mora y Lugares de firma sin cambiar el orden del simulador
+          RAZÓN: Mismo criterio que en préstamos. Monto máximo USD 300.000, comisión de 1% desde USD 40.000 y copy de transferencias tomados de la oficial; simulador verificado en cuatro escenarios.
+
+[2026-11-03] DECISIÓN: Imagen Open Graph única en el layout raíz (public/og/og-website.jpg), con tarjeta grande para Twitter/X
+          RAZÓN: Todas las páginas la heredan. Se resuelve con NEXT_PUBLIC_SITE_URL, que debe apuntar al dominio de producción.
+
+[2026-11-03] DECISIÓN: SEO base: robots.ts, sitemap.ts, canónicas por página, not-found propio y simuladores independientes con noindex
+          RAZÓN: Las rutas de QR repiten el simulador de las landings, así que se indexan solo las landings. Las URLs absolutas salen de lib/sitio.ts.
+
+[2026-11-03] PENDIENTE: Lendar confirma el paso a paso del inversor (no está en la página oficial, incluye 24–48 hs) y si la comisión lleva IVA (lendar.com.ar dice "+ IVA"; lendarlitoral.ar no)
+          RAZÓN: Las fuentes difieren o no hay respaldo; no inventar reglas de negocio.
+
+[2026-11-03] PENDIENTE: Lendar valida Marco Legal y Beneficios, que no están en la página oficial
+          RAZÓN: Validación a cargo de Lendar; no se modifican mientras tanto.
+
+[2026-11-03] PENDIENTE: Conectar el formulario de /contacto: hoy confirma el envío, pero no guarda ni manda los datos
+          RAZÓN: Los CTA de solicitud llevan ahí; requiere definir destino de las consultas.
+
+[2026-11-03] PENDIENTE: Confirmar IVA y escalón Gold del fee de inversor y la frase "doble rentabilidad"
+          RAZÓN: El sitio oficial y el código difieren; no inventar reglas de negocio.
 ```
 
 ## 10. CONVENCIONES DE CÓDIGO

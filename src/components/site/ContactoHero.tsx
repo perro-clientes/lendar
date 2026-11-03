@@ -1,3 +1,32 @@
+import {
+  EMAIL_SANTA_FE,
+  INSTAGRAM_URL,
+  INSTAGRAM_USUARIO,
+  WHATSAPP_NUMERO,
+  WHATSAPP_URL,
+} from "@/lib/contacto";
+
+const CANALES = [
+  {
+    titulo: "WhatsApp",
+    bajada: "La forma más rápida de consultarnos.",
+    valor: WHATSAPP_NUMERO,
+    href: WHATSAPP_URL,
+  },
+  {
+    titulo: "Mail",
+    bajada: "Para enviarnos documentación o consultas más largas.",
+    valor: EMAIL_SANTA_FE,
+    href: `mailto:${EMAIL_SANTA_FE}`,
+  },
+  {
+    titulo: "Redes",
+    bajada: "Novedades de Lendar en la región.",
+    valor: INSTAGRAM_USUARIO,
+    href: INSTAGRAM_URL,
+  },
+];
+
 export function ContactoHero() {
   return (
     <div
@@ -9,17 +38,20 @@ export function ContactoHero() {
         </h1>
 
         <div className="flex flex-col gap-6">
-          <div className="flex flex-col gap-2">
-            <h2 className="text-lg font-bold">Préstamos</h2>
-            <p>Whatsapp: (11) 4166-6056</p>
-            <p>Email: prestamos@lendar.com.ar</p>
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <h2 className="text-lg font-bold">Inversiones</h2>
-            <p>Whatsapp: (11) 4025-1448</p>
-            <p>Email: inversiones@lendar.com.ar</p>
-          </div>
+          {CANALES.map(({ titulo, bajada, valor, href }) => (
+            <div key={titulo} className="flex flex-col gap-1">
+              <p className="text-lg font-bold">{titulo}</p>
+              <p className="text-white/80">{bajada}</p>
+              <a
+                href={href}
+                target={href.startsWith("http") ? "_blank" : undefined}
+                rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
+                className="font-medium underline transition-colors hover:text-teal-light"
+              >
+                {valor}
+              </a>
+            </div>
+          ))}
         </div>
 
         <a

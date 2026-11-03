@@ -79,7 +79,7 @@ export function CTAContacto({ accent = "solicitante" }: CTAContactoProps) {
   return (
     <section className={`flex flex-col gap-4 rounded-2xl ${ACCENT_CLASSES[accent].fondo} p-5`}>
       <div className="text-center">
-        <h4 className="font-semibold text-2xl font-serif max-w-xl m-auto">¿Querés que te contactemos para ampliarte la información?</h4>
+        <h2 className="font-semibold text-2xl font-serif max-w-xl m-auto">¿Querés que te contactemos para ampliarte la información?</h2>
         <p className="text-sm leading-relaxed text-text-secondary">
           Dejanos tus datos y un asesor te va a contactar por el medio que prefieras.
         </p>

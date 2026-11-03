@@ -2,13 +2,17 @@ import type { Metadata } from "next";
 import { HeroInversor } from "@/components/site/HeroInversor";
 import { Banner } from "@/components/site/Banner";
 import { MarcoLegal } from "@/components/site/MarcoLegal";
+import { LugaresFirma } from "@/components/site/LugaresFirma";
 import { Proceso } from "@/components/site/Proceso";
+import { RespaldoInversion } from "@/components/site/RespaldoInversion";
+import { SiNoPaga } from "@/components/site/SiNoPaga";
 import { SimuladorInversion } from "@/components/simuladores/SimuladorInversion";
 
 export const metadata: Metadata = {
-  title: "Invertí en Lendar",
+  title: "Invertí en dólares con garantía hipotecaria",
   description:
-    "Financiá hipotecas reales de clientes de la red RE/MAX Argentina y cobrá una renta mensual fija en dólares con Lendar.",
+    "Cobrá una renta mensual fija en dólares, respaldada por hipoteca de primer grado sobre la propiedad. Lendar en Santa Fe y Entre Ríos.",
+  alternates: { canonical: "/inverti-en-lendar" },
 };
 
 export default function InvertiEnLendarPage() {
@@ -29,7 +33,12 @@ export default function InvertiEnLendarPage() {
         </div>
         <SimuladorInversion mostrarContacto={false} />
       </section>
-      <Banner accent="inversor" />
+      <RespaldoInversion />
+      <SiNoPaga />
+      <LugaresFirma />
+      <div className="pt-16 md:pt-24">
+        <Banner accent="inversor" />
+      </div>
     </>
   );
 }

@@ -1,7 +1,7 @@
 # Lendar — Product Requirements Document
 
-> **Versión: 0.5 — 2026-08-24**
-> Estado: Landings de audiencia completas — home con hero, landing de préstamos (marco legal, requisitos, proceso, beneficios, simulador con costos y honorarios, banner) y landing de inversiones.
+> **Versión: 0.6 — 2026-11-03**
+> Estado: Home y landings de audiencia completas — home de 4 secciones, landing de préstamos (marco legal, requisitos, proceso, beneficios, simulador con costos y honorarios, banner) y landing de inversiones.
 
 Cliente: Lendar (red RE/MAX Argentina)
 Proyecto: Plataforma de préstamos hipotecarios P2P
@@ -45,7 +45,7 @@ Proyecto: Plataforma de préstamos hipotecarios P2P
 | Navbar con logo, links de landings y CTA "Contacto" | [x] Implementado |
 | Footer con redes sociales y copyright | [x] Implementado |
 | CTAButton reutilizable (5 variantes + accent en variantes white) | [x] Implementado |
-| Home con hero y CTAs por audiencia | [x] Implementado |
+| Home de 4 secciones (hero, préstamos, inversiones, finanzas colaborativas) | [x] Implementado |
 | Página de contacto (`/contacto`) | [x] Implementada |
 | ContactoHero con imagen de fondo | [x] Implementado |
 | ContactoForm con validación cliente | [x] Implementado |
@@ -69,7 +69,6 @@ Proyecto: Plataforma de préstamos hipotecarios P2P
 
 | Feature | Estado |
 |---|---|
-| Contenido adicional del home (más allá del hero) | [ ] Pendiente |
 | Tracking por query params | [ ] Pendiente |
 | Endpoint de leads (`/api/leads`) | [ ] Pendiente |
 | Migración SQL de la tabla leads | [ ] Pendiente |
@@ -146,15 +145,16 @@ Lead con tipo, inputs, resultado, contacto y origen
 ### 6.4 Simulador de préstamo (`/simulador-prestamos`)
 
 **Inputs:**
-- Valor real de propiedad a hipotecar: slider USD 30.000–500.000, step 5.000
-- Monto solicitado: slider min USD 10.000, max dinámico = 35% del valor de la propiedad, step 1.000 (se clampea si baja la propiedad)
+- Valor real de propiedad a hipotecar: slider USD 29.000–450.000, step 500; no baja del mínimo para el monto elegido
+- Monto solicitado: slider USD 10.000–150.000, step 1.000, con accesos rápidos; hasta el 35% del valor de la propiedad
 - Plazo de devolución: 5 botones con TNA visible — 1 año (9,5%) · 2 años (10,5%) · 3 años (11,5%) · 4 años (12,5%) · 5 años (13,5%)
-- Checkbox "Vivienda única y permanente": sin efecto en el cálculo (pendiente Lendar)
+- Checkbox "Vivienda única y permanente": activo por defecto; si se desactiva, los intereses tributan 21% de IVA
 
 **Resultado:**
-- Amortización francesa: cuota fija mensual (capital + interés) destacada en card
-- Comisión inicial (5%) mostrada como línea informativa; IVA (21% sobre interés) detallado en la tabla
-- Tabla mes a mes expandible: N° cuota, amortización, interés, IVA, cuota total, saldo post-cuota
+- Amortización francesa sobre el capital financiado (monto + comisión de 5% + IVA)
+- Cuota fija, o rango de cuotas si corresponde IVA sobre intereses
+- Barra préstamo/aporte, plazo, tasa anual y capital financiado
+- Tabla mes a mes: N° cuota, amortización, interés, IVA, cuota total, saldo post-cuota
 
 **Contacto post-simulador (UI-only):**
 - Prop `mostrarContacto` (default `true`): visible en la ruta dedicada, oculto en la landing (ahí el cierre lo da el Banner)
@@ -166,21 +166,27 @@ Lead con tipo, inputs, resultado, contacto y origen
 - Ubicado full-width debajo de la tabla de cuotas, encima del formulario de contacto
 - Header con ícono Calculator en violeta (neutro de diferenciación, según referencia)
 - Card Comisión Lendar (violeta): "5% + IVA sobre {monto}" con el total calculado **en vivo** contra el slider (ej.: USD 127.000 → USD 7.684) en box anidado; nota "no se paga por separado: se suma al préstamo"
-- Card Costos de escribanía (teal, estático): compra con financiamiento Lendar 3,25%–5% del valor del inmueble; hipoteca sola 3%–6,5% del monto del préstamo; disclaimer de valores orientativos
+- Card Previsión de costos de escribanía (teal): consulta por WhatsApp, sin porcentajes; disclaimer de valores orientativos
 - Alturas parejeas (`items-stretch`) y degradés suaves surface→{accent}-light con borde de tono
+
+**Adelanto y precancelación (dentro del simulador):**
+- Adelanto parcial sin penalidad ni descuento de intereses
+- Cancelación total desde la cuota 2, con aviso de 30 días y penalidad de 5% + IVA sobre el capital pendiente
+- Calculadora en vivo: capital pendiente, penalidad, total e intereses que se dejan de pagar según la cuota elegida
 
 ### 6.5 Simulador de inversión (`/simulador-inversion`)
 
 **Inputs:**
-- Monto a invertir: slider USD 10.000–500.000, step 1.000 (máximo a confirmar con Lendar)
+- Monto a invertir: slider USD 10.000–300.000, step 1.000, con accesos rápidos
 - Plazo de inversión: mismo selector de 5 botones que en préstamo — 1 año (9,5%) · 2 años (10,5%) · 3 años (11,5%) · 4 años (12,5%) · 5 años (13,5%)
-- Formato de entrega del capital: Efectivo ("Llevás el dinero en efectivo al momento de la firma.") / Transferencia (copy a confirmar con Lendar)
-- Formato de cobro de la cuota: Efectivo ("Te pagan la cuota mensual en efectivo en el domicilio que determines cercano al lugar de firma.") / Transferencia (copy a confirmar con Lendar)
+- Formato de entrega del capital: Efectivo / Transferencia
+- Formato de cobro de la cuota: Efectivo / Transferencia
 
 **Resultado:**
-- Cobro mensual estimado destacado en card, con leyenda "Calculado mediante Sistema Francés directo en dólares billete."
-- Bloque Costos: Comisión Lendar (1,5% del monto invertido) — "Se paga por única vez, en efectivo, el día de la firma en la escribanía."
-- Tabla mes a mes siempre visible (sin interacción): N° cuota, amortización, interés, cuota total, saldo post-cuota. **Sin columna IVA** (a diferencia de la tabla de préstamo)
+- Cobro mensual estimado, plazo y tasa anual, con leyenda "Calculado mediante Sistema Francés directo en dólares billete."
+- CTA "Quiero invertir: charlemos" a `/contacto`
+- Bloque Costos: Comisión Lendar de 1,5% del monto invertido, o 1% desde USD 40.000. Se paga por única vez, en efectivo, el día de la firma
+- Tabla mes a mes siempre visible: N° cuota, amortización, interés, cuota total, saldo post-cuota. **Sin columna IVA**
 
 **Contacto post-simulador:** mismo `CTAContacto` compartido con accent `inversor` y botón `solid-inversor`.
 
@@ -188,22 +194,26 @@ Lead con tipo, inputs, resultado, contacto y origen
 
 ### 6.6 Landing "Pedí tu préstamo" (`/pedi-tu-prestamo`)
 
-Landing completa del solicitante. Estructura: Hero → MarcoLegal → Requisitos → Proceso → Beneficios → Simulador → Banner.
+Landing completa del solicitante. Estructura: Hero → MarcoLegal → Requisitos → Proceso → Beneficios → Simulador → Lugares de firma → Banner.
 
 - **Hero**: fondo teal con imagen bg-shape; CTAs "Simulá tu préstamo" (#simulador) y "Conocé el marco legal" (#marco-legal)
 - **Marco legal** (accent solicitante): "Tu préstamo, protegido por ley" + 4 ítems legales con checks
 - **Requisitos**: 2 cards — información del solicitante (teal) e información del inmueble (violeta como neutro de categorización); bullets simples
-- **Proceso** (accent solicitante): 5 pasos sticky-scroll con copy propio de la solicitud
+- **Proceso** (accent solicitante): línea de tiempo de 5 pasos con plazos estimados
 - **Beneficios**: 4 cards con íconos lucide y acentos alternados teal/violeta (Comprá Hoy, Operación Blindada, Avanzá con Certeza, Más Compradores)
 - **Simulador**: mismo `SimuladorPrestamo` con contacto oculto
+- **Lugares de firma**: 5 escribanías con sus oficinas RE/MAX asociadas y contacto por email
 - **Banner** CTA final a `/contacto`: "¿Listo para pedir tu préstamo?"
 
 ### 6.7 Landing "Invertí en Lendar" (`/inverti-en-lendar`)
 
-Estructura espejada: Hero → MarcoLegal → Proceso → Simulador → Banner.
+Estructura: Hero → MarcoLegal → Proceso → Simulador → Respaldo → Si no paga → Lugares de firma → Banner.
 
 - Mismos componentes compartidos con accent inversor; copy de proceso propio del rol inversor
-- Simulador de inversión embebido con contacto oculto; Banner "¿Listo para empezar a invertir?" cierra hacia `/contacto`
+- Simulador de inversión embebido con contacto oculto
+- **Respaldo**: préstamo de hasta 35% del valor real de la propiedad y 65% de margen de cobertura
+- **Si no paga**: filtro previo, seguimiento de mora, interés punitorio y ejecución de la hipoteca como último recurso
+- **Lugares de firma** y Banner "¿Listo para empezar a invertir?" hacia `/contacto`
 
 > Patrón transversal: los componentes de landing (MarcoLegal, Proceso, Banner) se generalizaron con prop `accent` + mapa de copy interno para evitar duplicación por audiencia.
 
@@ -237,12 +247,14 @@ Estructura espejada: Hero → MarcoLegal → Proceso → Simulador → Banner.
 
 | Ruta | Descripción |
 |---|---|
-| `/` | Home con hero y CTAs por audiencia |
+| `/` | Home de 4 secciones con CTAs a cada landing |
 | `/contacto` | Página de contacto |
 | `/pedi-tu-prestamo` | Landing del solicitante (6 secciones + banner) |
 | `/inverti-en-lendar` | Landing del inversor |
-| `/simulador-prestamos` | Simulador de préstamo standalone (con contacto) |
-| `/simulador-inversion` | Simulador de inversión standalone (acceso por link/QR) |
+| `/simulador-prestamos` | Simulador de préstamo standalone (con contacto; noindex) |
+| `/simulador-inversion` | Simulador de inversión standalone (acceso por link/QR; noindex) |
+| `/terminos-y-condiciones` | Términos y condiciones |
+| `/politica-de-privacidad` | Política de privacidad |
 
 ### 7.4 Seguridad y acceso
 
@@ -305,7 +317,7 @@ Estructura espejada: Hero → MarcoLegal → Proceso → Simulador → Banner.
 4. La data de lugares de firma está hardcodeada (pendiente de confirmar con cliente)
 5. Mobile-first: un layout responsive que se adapta a cada dispositivo
 6. La lógica financiera vive en funciones puras con constantes exportadas (única fuente de verdad); sin números sueltos en la UI
-7. Las reglas pendientes de confirmación ("vivienda única y permanente", concepto gravado por el IVA en la tabla) van como TODO en código — nunca se inventan. La comisión Lendar del solicitante quedó confirmada: se informa con IVA incluido (5% base × 1,21)
+7. Las reglas pendientes de confirmación van como TODO en código — nunca se inventan. La comisión del solicitante (5% + IVA) se financia dentro de la cuota, y el IVA sobre intereses no aplica a vivienda única y permanente
 
 ## 10. SUPUESTOS Y RESTRICCIONES
 
@@ -325,7 +337,7 @@ Estructura espejada: Hero → MarcoLegal → Proceso → Simulador → Banner.
 - **Hecho:** Landing del solicitante (`/pedi-tu-prestamo`) y landing del inversor (`/inverti-en-lendar`)
 - **Hecho:** Simulador de préstamo (`/simulador-prestamos`) con bloque Costos y Honorarios
 - **Hecho:** Simulador de inversión (`/simulador-inversion`)
-- **Corto plazo:** Contenido adicional del home (más allá del hero)
+- **Hecho:** Home de 4 secciones
 - **Corto plazo:** Tracking por query params (evento/vendedor)
 - **Corto plazo:** Endpoint de leads y migración SQL
 - **Mediano plazo:** Panel mínimo de consulta de leads por evento/vendedor
@@ -346,7 +358,6 @@ Estructura espejada: Hero → MarcoLegal → Proceso → Simulador → Banner.
 | Tracking | Conjunto `evento`/`vendedor` que identifica el origen del lead |
 | CTA | Call to Action — botón o enlace que invita a una acción |
 | TNA | Tasa Nominal Anual — se divide por 12 para obtener la tasa mensual |
-| Comisión inicial | Cargo único del 5% del monto solicitado (hoy solo informativa) |
-| Comisión Lendar | Cargo único del 1,5% del monto invertido; se paga en efectivo el día de la firma |
-| Inversor Gold | Escalón documentado (1% para inversión > USD 40.000); pendiente confirmar si aplica al simulador |
+| Comisión inicial | Cargo único del 5% + IVA del monto solicitado; se suma al préstamo y se devuelve con la cuota |
+| Comisión Lendar | Cargo único del inversor: 1,5% del monto invertido, o 1% desde USD 40.000; se paga en efectivo el día de la firma |
 | Formato de entrega/cobro | Modalidad Efectivo o Transferencia para entregar el capital y cobrar la cuota |

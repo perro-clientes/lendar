@@ -1,35 +1,42 @@
 import { CTAButton } from "./CTAButton";
 
+const ASUNTO_CONSULTA = encodeURIComponent("Consulta sobre crédito Lendar");
+
 const lugares = [
   {
     zona: "Santa Fe",
-    escribania: "Culzoni & Zanetta",
-    direccion: "San Martín 5252, Santa Fe",
+    escribania: "Escribanía Culzoni & Zanetta",
+    direccion: "San Martín 3262, Santa Fe",
     oficinas: "Santa Fe Capital, Fortaleza (Esperanza), Conquista (Reconquista)",
+    email: "escribaniaculzoni@gmail.com",
   },
   {
     zona: "Rafaela",
-    escribania: "Epuliza",
-    direccion: "Mitre 240, Rafaela",
+    escribania: "Escribanía Eguiazu",
+    direccion: "Moreno 240, Rafaela",
     oficinas: "Confianza (Rafaela)",
+    email: "hipotecas@escribaniaeguiazu.com.ar",
   },
   {
-    zona: "Rosario",
-    escribania: "Alegre",
-    direccion: "Córdoba 1439 Piso 2 Of 10, Rosario",
-    oficinas: "Forum, Terra, Select, Colonial, Tendencia",
+    zona: "Rosario I",
+    escribania: "Escribanía Alegre",
+    direccion: "Córdoba 1438 Piso 2, Of. 01, Rosario",
+    oficinas: "Forum, Terra, Select, Colonial, Tendencia, Flor",
+    email: "escribaniaalegre@gmail.com",
   },
   {
-    zona: "Rosario",
+    zona: "Rosario II",
     escribania: "Verónica Ferreyra",
-    direccion: "San Martín 647 Piso 5, Rosario",
-    oficinas: "Exclusive, Vip, Point",
+    direccion: "San Martín 647, Piso 5, Rosario",
+    oficinas: "Exclusivo, Vip",
+    email: "escribanaferreyra@gmail.com",
   },
   {
     zona: "Paraná",
-    escribania: "Quíndoz",
-    direccion: "San Martín 338, Paraná",
+    escribania: "Escribanía Quinodoz",
+    direccion: "San Martín 228, Paraná",
     oficinas: "Por Más (Paraná)",
+    email: "escribaniaquinodoz@gmail.com",
   },
 ];
 
@@ -41,7 +48,7 @@ export function LugaresFirma() {
           <h2 className="text-4xl md:text-5xl font-serif font-semibold text-center mb-4">
             Lugares de firma
           </h2>
-          <p className="text-lg text-text-muted">Contamos con escribanías de primer nivel en Santa Fe, Rosario y Paraná para realizar tus firmas.</p>
+          <p className="text-lg text-text-muted">Escribanías con las que trabajamos, según la oficina RE/MAX.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -59,7 +66,9 @@ export function LugaresFirma() {
               <p className="text-sm text-text-muted">{lugar.direccion}</p>
               <p className="text-sm text-text-secondary">{lugar.oficinas}</p>
               <div className="mt-auto pt-4">
-                <CTAButton variant="outline">Contactar</CTAButton>
+                <a href={`mailto:${lugar.email}?subject=${ASUNTO_CONSULTA}`}>
+                  <CTAButton variant="outline">Contactar</CTAButton>
+                </a>
               </div>
             </div>
           ))}
